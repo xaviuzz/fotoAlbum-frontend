@@ -16,6 +16,10 @@ React app on Bun. Keeps a pinned copy of the backend's `openapi.yaml` and genera
 
 A change is done when test, lint, typecheck, build and generate:check pass.
 
+## Image
+
+`Dockerfile` installs production dependencies and runs `bun run dev` on port 5173 (`PORT`), with `API_URL` defaulting to `http://backend:3000`; `fotoAlbum-e2e` builds it. `docker build -t fotoalbum-frontend .`. In this sandbox bridge networking fails: build with `--network host` and run with `--network host`.
+
 ## Stack
 
 Bun builds, serves and runs tests; no Vite, no Vitest. React, Tailwind v4 and shadcn on top. TypeScript stays on 5.x: `openapi-typescript` needs its JavaScript API, which 7.x lacks. Add no dependency without asking.
