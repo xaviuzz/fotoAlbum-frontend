@@ -1,26 +1,44 @@
-import { describe, expect, test } from "bun:test";
+import { beforeEach, describe, expect, test } from "bun:test";
 import { render, screen } from "@testing-library/react";
-import createClient from "openapi-fetch";
-import { HealthCheck } from "@/api/HealthCheck";
-import type { paths } from "@/api/schema";
+import { ApiProvider } from "@/api/ApiContext";
 import { Header } from "@/components/Header";
 
-function pendingHealthCheck() {
-	const client = createClient<paths>({
-		baseUrl: "http://localhost",
-		fetch: () => new Promise(() => {}),
-	});
-	return new HealthCheck(client);
-}
-
 describe("Header", () => {
-	test("shows the app name with the health mark beside it", () => {
-		render(<Header healthCheck={pendingHealthCheck()} />);
+	let sut: SUT;
 
-		const banner = screen.getByRole("banner");
-		const heading = screen.getByRole("heading", { name: "fotoAlbum" });
-		const mark = screen.getByRole("status");
-		expect(banner).toContainElement(heading);
-		expect(banner).toContainElement(mark);
+	beforeEach(() => {
+		sut = new SUT();
+	});
+
+	test("shows the app name with the health mark beside it", () => {
+		sut.show();
+
+		expect(sut.banner()).toContainElement(sut.heading());
+		expect(sut.banner()).toContainElement(sut.mark());
 	});
 });
+
+class SUT {
+	show() {
+		render(
+			<ApiProvider
+				baseUrl="http://localhost"
+				fetch={() => new Promise(() => {})}
+			>
+				<Header />
+			</ApiProvider>,
+		);
+	}
+
+	banner() {
+		return screen.getByRole("banner");
+	}
+
+	heading() {
+		return screen.getByRole("heading", { name: "fotoAlbum" });
+	}
+
+	mark() {
+		return screen.getByRole("status");
+	}
+}

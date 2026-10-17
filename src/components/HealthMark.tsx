@@ -1,6 +1,7 @@
 import { Check, Circle, X } from "lucide-react";
 import { useEffect, useState } from "react";
-import type { Health, HealthCheck } from "@/api/HealthCheck";
+import { useHealthCheck } from "@/api/ApiContext";
+import type { Health } from "@/api/HealthCheck";
 
 type Reading = Health | "checking";
 
@@ -14,7 +15,8 @@ const marks = {
 	error: { Icon: X, label: "Service is down", color: "text-error" },
 };
 
-export function HealthMark({ healthCheck }: { healthCheck: HealthCheck }) {
+export function HealthMark() {
+	const healthCheck = useHealthCheck();
 	const [reading, setReading] = useState<Reading>("checking");
 
 	useEffect(() => {

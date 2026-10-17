@@ -1,16 +1,102 @@
-import { describe, expect, test } from "bun:test";
+import { beforeEach, describe, expect, test } from "bun:test";
 import { render, screen } from "@testing-library/react";
-import createClient from "openapi-fetch";
-import { HealthCheck } from "@/api/HealthCheck";
-import type { paths } from "@/api/schema";
+import { ApiProvider } from "@/api/ApiContext";
 import { HealthMark } from "@/components/HealthMark";
 
-function healthCheckAnswering(answer: () => Promise<Response>) {
-	const client = createClient<paths>({
-		baseUrl: "http://localhost",
-		fetch: answer,
+describe("HealthMark", () => {
+	let sut: SUT;
+
+	beforeEach(() => {
+		sut = new SUT();
 	});
-	return new HealthCheck(client);
+
+	test("is neutral while the check is pending", () => {
+		sut.show();
+
+		expect(sut.mark()).toHaveAccessibleName("Checking service");
+	});
+
+	test("turns into a green check when the service is ok", async () => {
+		sut.answerOk();
+
+		sut.show();
+
+		expect(await sut.markOnceUp()).toHaveClass("text-ok");
+	});
+
+	test("turns into a red cross when the check fails", async () => {
+		sut.fail();
+
+		sut.show();
+
+		expect(await sut.markOnceDown()).toHaveClass("text-error");
+	});
+
+	test("needs a api provider", () => {
+		expect(() => sut.showWithoutProvider()).toThrow("ApiProvider");
+	});
+
+	test("checks once on load", async () => {
+		sut.answerOk();
+
+		sut.show();
+		await sut.markOnceUp();
+
+		expect(sut.checksMade()).toBe(1);
+	});
+});
+
+class SUT {
+	private answer: () => Promise<Response> = () => new Promise(() => {});
+	private checks = 0;
+
+	answerOk() {
+		this.answer = async () => okReply();
+	}
+
+	fail() {
+		this.answer = async () => {
+			throw new TypeError("network down");
+		};
+	}
+
+	show() {
+		const fetch = () => {
+			this.checks += 1;
+			return this.answer();
+		};
+		render(
+			<ApiProvider baseUrl="http://localhost" fetch={fetch}>
+				<HealthMark />
+			</ApiProvider>,
+		);
+	}
+
+	showWithoutProvider() {
+		const silenced = console.error;
+		console.error = () => {};
+		try {
+			render(<HealthMark />);
+		} finally {
+			console.error = silenced;
+		}
+	}
+
+	mark() {
+		return screen.getByRole("status");
+	}
+
+	markOnceUp() {
+		return screen.findByRole("status", { name: "Service is up" });
+	}
+
+	markOnceDown() {
+		return screen.findByRole("status", { name: "Service is down" });
+	}
+
+	checksMade() {
+		return this.checks;
+	}
 }
 
 function okReply() {
@@ -22,47 +108,3 @@ function okReply() {
 		headers: { "content-type": "application/json" },
 	});
 }
-
-describe("HealthMark", () => {
-	test("is neutral while the check is pending", () => {
-		const healthCheck = healthCheckAnswering(() => new Promise(() => {}));
-
-		render(<HealthMark healthCheck={healthCheck} />);
-
-		const mark = screen.getByRole("status");
-		expect(mark).toHaveAccessibleName("Checking service");
-	});
-
-	test("turns into a green check when the service is ok", async () => {
-		const healthCheck = healthCheckAnswering(async () => okReply());
-
-		render(<HealthMark healthCheck={healthCheck} />);
-
-		const mark = await screen.findByRole("status", { name: "Service is up" });
-		expect(mark).toHaveClass("text-ok");
-	});
-
-	test("turns into a red cross when the check fails", async () => {
-		const healthCheck = healthCheckAnswering(async () => {
-			throw new TypeError("network down");
-		});
-
-		render(<HealthMark healthCheck={healthCheck} />);
-
-		const mark = await screen.findByRole("status", { name: "Service is down" });
-		expect(mark).toHaveClass("text-error");
-	});
-
-	test("checks once on load", async () => {
-		let checks = 0;
-		const healthCheck = healthCheckAnswering(async () => {
-			checks += 1;
-			return okReply();
-		});
-
-		render(<HealthMark healthCheck={healthCheck} />);
-		await screen.findByRole("status", { name: "Service is up" });
-
-		expect(checks).toBe(1);
-	});
-});
