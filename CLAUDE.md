@@ -4,7 +4,7 @@ React app on Bun. Keeps a pinned copy of the backend's `openapi.yaml` and genera
 
 ## Commands
 
-- `bun run dev`: `dev.ts`, dev server on port 5173 (`PORT`) proxying `POST /health.check` to `API_URL` (default `http://localhost:3000`)
+- `bun run dev`: `dev.ts`, dev server on port 5173 (`PORT`) proxying `POST /health.check` and `POST /album.*` to `API_URL` (default `http://localhost:3000`) and serving `index.html` on any other path
 - `bun run test`: `bun test`, with happy-dom and Testing Library preloaded from `test/setup.ts`
 - `bun run lint`: Biome check (lint and format); `bunx biome check --write .` fixes
 - `bun run typecheck`: `tsc --noEmit`
@@ -30,4 +30,4 @@ Bun builds, serves and runs tests; no Vite, no Vitest. React, Tailwind v4 and sh
 
 ## Skills
 
-Project skills `shadcn` and `vercel-react-best-practices`: use them when writing components.
+Before writing or changing a component, read `.claude/skills/shadcn/SKILL.md` and `.claude/skills/vercel-react-best-practices/SKILL.md`; from a session started outside `frontend/` the Skill tool cannot load them. Check `src/components/ui/` and run `bunx --bun shadcn@latest add <component>` before styling markup by hand.
