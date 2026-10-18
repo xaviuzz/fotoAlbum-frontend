@@ -2,12 +2,17 @@ import index from "./index.html";
 
 const apiUrl = process.env.API_URL ?? "http://localhost:3000";
 
+function proxyTo(path: string) {
+	return (request: Request) => fetch(new URL(path, apiUrl), request);
+}
+
 Bun.serve({
 	port: Number(process.env.PORT ?? 5173),
 	routes: {
-		"/": index,
-		"/health.check": (request) =>
-			fetch(new URL("/health.check", apiUrl), request),
+		"/*": index,
+		"/health.check": proxyTo("/health.check"),
+		"/album.list": proxyTo("/album.list"),
+		"/album.get": proxyTo("/album.get"),
 	},
 	development: true,
 });
