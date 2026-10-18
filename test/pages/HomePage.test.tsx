@@ -3,6 +3,7 @@ import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 import { ApiProvider } from "@/api/ApiContext";
 import { HomePage } from "@/pages/HomePage";
+import { FreshSession } from "../support/FreshSession";
 
 const albums = [
 	{
@@ -67,9 +68,11 @@ class SUT {
 	show() {
 		render(
 			<ApiProvider baseUrl="http://localhost" fetch={() => this.answer()}>
-				<MemoryRouter>
-					<HomePage />
-				</MemoryRouter>
+				<FreshSession>
+					<MemoryRouter>
+						<HomePage />
+					</MemoryRouter>
+				</FreshSession>
 			</ApiProvider>,
 		);
 	}

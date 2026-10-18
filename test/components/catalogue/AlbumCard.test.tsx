@@ -1,8 +1,12 @@
 import { beforeEach, describe, expect, test } from "bun:test";
 import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router";
 import { AlbumCard } from "@/components/catalogue/AlbumCard";
 import { PresentedAlbum } from "@/lib/PresentedAlbum";
+import { SessionStore } from "@/lib/SessionStore";
+import { SessionProvider } from "@/session/SessionContext";
+import { FakeStorage } from "../../support/FakeStorage";
 
 const portraitAlbum = new PresentedAlbum({
 	reference: "PT-150",
@@ -35,18 +39,44 @@ describe("AlbumCard", () => {
 		expect(sut.link()).toHaveTextContent("20 páginas");
 		expect(sut.link()).toHaveTextContent("Tapa blanda");
 	});
+
+	test("records the album in the session when clicked", async () => {
+		sut.show(portraitAlbum);
+
+		await sut.click();
+
+		expect(sut.chosenPath()).toBe("/confeccion/PT-150");
+	});
+
+	test("records nothing until it is clicked", () => {
+		sut.show(portraitAlbum);
+
+		expect(sut.chosenPath()).toBe("/");
+	});
 });
 
 class SUT {
+	private readonly store = new SessionStore(new FakeStorage());
+
 	show(album: PresentedAlbum) {
 		render(
-			<MemoryRouter>
-				<AlbumCard album={album} />
-			</MemoryRouter>,
+			<SessionProvider store={this.store}>
+				<MemoryRouter>
+					<AlbumCard album={album} />
+				</MemoryRouter>
+			</SessionProvider>,
 		);
 	}
 
 	link() {
 		return screen.getByRole("link");
+	}
+
+	click() {
+		return userEvent.click(this.link());
+	}
+
+	chosenPath() {
+		return this.store.load().path();
 	}
 }

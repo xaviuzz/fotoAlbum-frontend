@@ -2,6 +2,8 @@ import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router";
 import { App } from "@/App";
 import { ApiProvider } from "@/api/ApiContext";
+import { SessionStore } from "@/lib/SessionStore";
+import { SessionProvider } from "@/session/SessionContext";
 import "./index.css";
 
 const rootElement = document.getElementById("root");
@@ -11,8 +13,10 @@ if (rootElement === null) {
 
 createRoot(rootElement).render(
 	<ApiProvider baseUrl={window.location.origin}>
-		<BrowserRouter>
-			<App />
-		</BrowserRouter>
+		<SessionProvider store={SessionStore.inBrowser()}>
+			<BrowserRouter>
+				<App />
+			</BrowserRouter>
+		</SessionProvider>
 	</ApiProvider>,
 );

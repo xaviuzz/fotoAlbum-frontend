@@ -3,6 +3,7 @@ import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 import { AlbumRow } from "@/components/catalogue/AlbumRow";
 import { PresentedAlbum } from "@/lib/PresentedAlbum";
+import { FreshSession } from "../../support/FreshSession";
 
 const squareAlbum = new PresentedAlbum({
 	reference: "SQ-210",
@@ -50,9 +51,11 @@ describe("AlbumRow", () => {
 class SUT {
 	show(albums: PresentedAlbum[]) {
 		render(
-			<MemoryRouter>
-				<AlbumRow albums={albums} />
-			</MemoryRouter>,
+			<FreshSession>
+				<MemoryRouter>
+					<AlbumRow albums={albums} />
+				</MemoryRouter>
+			</FreshSession>,
 		);
 	}
 

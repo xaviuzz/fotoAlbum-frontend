@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router";
+import { useParams } from "react-router";
 import { useAlbums } from "@/api/ApiContext";
 import {
 	AlbumMaking,
@@ -27,9 +27,6 @@ export function MakingPage() {
 	return (
 		<main aria-label="Confección" className="flex flex-col gap-4 p-6">
 			<AlbumMaking reading={reading} />
-			<Link to="/" className="text-primary underline">
-				Volver al catálogo
-			</Link>
 		</main>
 	);
 }

@@ -38,12 +38,13 @@ describe("MakingPage", () => {
 		expect(sut.referenceAsked()).toBe("PT-150");
 	});
 
-	test("links back to the catalogue", async () => {
+	test("offers no link back to the catalogue", async () => {
 		sut.answerAlbum();
 
 		sut.show("PT-150");
+		await sut.heading("Retrato de bolsillo");
 
-		expect(await sut.backLink()).toHaveAttribute("href", "/");
+		expect(sut.links()).toHaveLength(0);
 	});
 });
 
@@ -80,8 +81,8 @@ class SUT {
 		return screen.findByRole("main", { name: "Confección" });
 	}
 
-	backLink() {
-		return screen.findByRole("link", { name: "Volver al catálogo" });
+	links() {
+		return screen.queryAllByRole("link");
 	}
 
 	referenceAsked() {

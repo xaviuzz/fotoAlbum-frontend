@@ -6,6 +6,7 @@ import {
 	type CatalogueReading,
 } from "@/components/catalogue/Catalogue";
 import { PresentedAlbum } from "@/lib/PresentedAlbum";
+import { FreshSession } from "../../support/FreshSession";
 
 const album = new PresentedAlbum({
 	reference: "PT-150",
@@ -52,9 +53,11 @@ describe("Catalogue", () => {
 class SUT {
 	show(reading: CatalogueReading) {
 		render(
-			<MemoryRouter>
-				<Catalogue reading={reading} />
-			</MemoryRouter>,
+			<FreshSession>
+				<MemoryRouter>
+					<Catalogue reading={reading} />
+				</MemoryRouter>
+			</FreshSession>,
 		);
 	}
 
