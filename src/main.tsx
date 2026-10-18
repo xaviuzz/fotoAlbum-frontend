@@ -1,4 +1,5 @@
 import { createRoot } from "react-dom/client";
+import { BrowserRouter } from "react-router";
 import { App } from "@/App";
 import { ApiProvider } from "@/api/ApiContext";
 import "./index.css";
@@ -10,6 +11,8 @@ if (rootElement === null) {
 
 createRoot(rootElement).render(
 	<ApiProvider baseUrl={window.location.origin}>
-		<App />
+		<BrowserRouter>
+			<App />
+		</BrowserRouter>
 	</ApiProvider>,
 );
