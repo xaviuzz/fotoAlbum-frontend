@@ -73,7 +73,7 @@ export interface components {
         };
         ErrorBody: {
             /** @enum {string} */
-            code: "INVALID_BODY" | "INTERNAL_ERROR";
+            code: "INVALID_BODY" | "ALBUM_NOT_FOUND" | "INTERNAL_ERROR";
             message: string;
         };
         HealthCheckReply: {
