@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, test } from "bun:test";
 import createClient from "openapi-fetch";
 import { type Album, Albums } from "@/api/Albums";
 import type { paths } from "@/api/schema";
+import { PresentedAlbum } from "@/lib/PresentedAlbum";
 
 const squareAlbum: Album = {
 	reference: "SQ-210",
@@ -25,7 +26,10 @@ describe("Albums list", () => {
 
 		await sut.list();
 
-		expect(sut.result()).toEqual({ status: "ok", albums: [squareAlbum] });
+		expect(sut.result()).toEqual({
+			status: "ok",
+			albums: [new PresentedAlbum(squareAlbum)],
+		});
 	});
 
 	test("posts a fresh callId to /album.list", async () => {
@@ -78,7 +82,10 @@ describe("Albums get", () => {
 
 		await sut.get("SQ-210");
 
-		expect(sut.result()).toEqual({ status: "ok", album: squareAlbum });
+		expect(sut.result()).toEqual({
+			status: "ok",
+			album: new PresentedAlbum(squareAlbum),
+		});
 	});
 
 	test("posts the reference to /album.get", async () => {

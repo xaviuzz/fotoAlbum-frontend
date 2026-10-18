@@ -1,10 +1,10 @@
 import { beforeEach, describe, expect, test } from "bun:test";
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
-import type { Album } from "@/api/Albums";
-import { AlbumCard } from "@/components/AlbumCard";
+import { AlbumCard } from "@/components/catalogue/AlbumCard";
+import { PresentedAlbum } from "@/lib/PresentedAlbum";
 
-const portraitAlbum: Album = {
+const portraitAlbum = new PresentedAlbum({
 	reference: "PT-150",
 	commercialName: "Retrato de bolsillo",
 	albumSize: { width: 150, height: 210 },
@@ -12,7 +12,7 @@ const portraitAlbum: Album = {
 	pageCount: 20,
 	binding: "softcover",
 	orientation: "portrait",
-};
+});
 
 describe("AlbumCard", () => {
 	let sut: SUT;
@@ -38,7 +38,7 @@ describe("AlbumCard", () => {
 });
 
 class SUT {
-	show(album: Album) {
+	show(album: PresentedAlbum) {
 		render(
 			<MemoryRouter>
 				<AlbumCard album={album} />

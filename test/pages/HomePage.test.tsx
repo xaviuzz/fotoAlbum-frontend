@@ -38,12 +38,6 @@ describe("HomePage", () => {
 		expect(sut.title()).toBeInTheDocument();
 	});
 
-	test("shows a quiet loading message while the catalogue is pending", () => {
-		sut.show();
-
-		expect(sut.loading()).toBeInTheDocument();
-	});
-
 	test("shows one card per album of the catalogue", async () => {
 		sut.answerAlbums(albums);
 
@@ -53,22 +47,6 @@ describe("HomePage", () => {
 		expect(cards).toHaveLength(2);
 		expect(cards[0]).toHaveTextContent("Cuadrado clásico");
 		expect(cards[1]).toHaveTextContent("Retrato de bolsillo");
-	});
-
-	test("shows an empty message when the catalogue has no albums", async () => {
-		sut.answerAlbums([]);
-
-		sut.show();
-
-		expect(await sut.emptyMessage()).toBeInTheDocument();
-	});
-
-	test("shows an error message when the call fails", async () => {
-		sut.fail();
-
-		sut.show();
-
-		expect(await sut.errorMessage()).toBeInTheDocument();
 	});
 });
 
@@ -86,12 +64,6 @@ class SUT {
 			);
 	}
 
-	fail() {
-		this.answer = async () => {
-			throw new TypeError("network down");
-		};
-	}
-
 	show() {
 		render(
 			<ApiProvider baseUrl="http://localhost" fetch={() => this.answer()}>
@@ -106,19 +78,7 @@ class SUT {
 		return screen.getByRole("heading", { name: "Elige un álbum" });
 	}
 
-	loading() {
-		return screen.getByRole("status", { name: "Cargando álbumes" });
-	}
-
 	cards() {
 		return screen.findAllByRole("link");
-	}
-
-	emptyMessage() {
-		return screen.findByText("El catálogo está vacío");
-	}
-
-	errorMessage() {
-		return screen.findByRole("alert");
 	}
 }

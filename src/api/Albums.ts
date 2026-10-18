@@ -1,15 +1,16 @@
 import type { Client } from "openapi-fetch";
 import type { components, paths } from "@/api/schema";
+import { PresentedAlbum } from "@/lib/PresentedAlbum";
 
 export type Album = components["schemas"]["Album"];
 export type AlbumErrorCode = components["schemas"]["ErrorBody"]["code"];
 
 export type AlbumsAnswer =
-	| { status: "ok"; albums: Album[] }
+	| { status: "ok"; albums: PresentedAlbum[] }
 	| { status: "error"; code: AlbumErrorCode };
 
 export type AlbumAnswer =
-	| { status: "ok"; album: Album }
+	| { status: "ok"; album: PresentedAlbum }
 	| { status: "error"; code: AlbumErrorCode };
 
 export class Albums {
@@ -28,7 +29,11 @@ export class Albums {
 			});
 			const body = reply.data?.body;
 			if (body && "albums" in body) {
-				answer = { status: "ok", albums: body.albums };
+				const albums = [];
+				for (const album of body.albums) {
+					albums.push(new PresentedAlbum(album));
+				}
+				answer = { status: "ok", albums };
 			}
 			if (body && "code" in body) {
 				answer = { status: "error", code: body.code };
@@ -48,7 +53,7 @@ export class Albums {
 			});
 			const body = reply.data?.body;
 			if (body && "album" in body) {
-				answer = { status: "ok", album: body.album };
+				answer = { status: "ok", album: new PresentedAlbum(body.album) };
 			}
 			if (body && "code" in body) {
 				answer = { status: "error", code: body.code };

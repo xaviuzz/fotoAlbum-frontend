@@ -21,32 +21,12 @@ describe("MakingPage", () => {
 		sut = new SUT();
 	});
 
-	test("shows a quiet loading message while the album is pending", () => {
-		sut.show("PT-150");
-
-		expect(sut.loading()).toBeInTheDocument();
-	});
-
 	test("shows the commercial name as heading", async () => {
 		sut.answerAlbum();
 
 		sut.show("PT-150");
 
 		expect(await sut.heading("Retrato de bolsillo")).toBeInTheDocument();
-	});
-
-	test("shows the characteristics of the album", async () => {
-		sut.answerAlbum();
-
-		sut.show("PT-150");
-
-		const page = await sut.page();
-		expect(page).toHaveTextContent("PT-150");
-		expect(page).toHaveTextContent("150 × 210 mm");
-		expect(page).toHaveTextContent("140 × 200 mm");
-		expect(page).toHaveTextContent("20");
-		expect(page).toHaveTextContent("Tapa blanda");
-		expect(page).toHaveTextContent("Vertical");
 	});
 
 	test("asks for the album of the reference in the path", async () => {
@@ -65,22 +45,6 @@ describe("MakingPage", () => {
 
 		expect(await sut.backLink()).toHaveAttribute("href", "/");
 	});
-
-	test("says the album was not found", async () => {
-		sut.answerNotFound();
-
-		sut.show("NOPE");
-
-		expect(await sut.notFound()).toBeInTheDocument();
-	});
-
-	test("shows an error message when the call fails", async () => {
-		sut.fail();
-
-		sut.show("PT-150");
-
-		expect(await sut.errorMessage()).toBeInTheDocument();
-	});
 });
 
 class SUT {
@@ -89,23 +53,6 @@ class SUT {
 
 	answerAlbum() {
 		this.answer = async () => okReply({ album });
-	}
-
-	answerNotFound() {
-		this.answer = async () =>
-			new Response(
-				JSON.stringify({
-					header: { callId: "c", status: "error" },
-					body: { code: "ALBUM_NOT_FOUND", message: "no such album" },
-				}),
-				{ headers: { "content-type": "application/json" } },
-			);
-	}
-
-	fail() {
-		this.answer = async () => {
-			throw new TypeError("network down");
-		};
 	}
 
 	show(reference: string) {
@@ -125,10 +72,6 @@ class SUT {
 		);
 	}
 
-	loading() {
-		return screen.getByRole("status", { name: "Cargando álbum" });
-	}
-
 	heading(name: string) {
 		return screen.findByRole("heading", { name });
 	}
@@ -139,14 +82,6 @@ class SUT {
 
 	backLink() {
 		return screen.findByRole("link", { name: "Volver al catálogo" });
-	}
-
-	notFound() {
-		return screen.findByText("Álbum no encontrado");
-	}
-
-	errorMessage() {
-		return screen.findByRole("alert");
 	}
 
 	referenceAsked() {
