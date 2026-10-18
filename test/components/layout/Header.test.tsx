@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, test } from "bun:test";
 import { render, screen } from "@testing-library/react";
 import { ApiProvider } from "@/api/ApiContext";
 import { Header } from "@/components/layout/Header";
+import { FreshSession } from "../../support/FreshSession";
 
 describe("Header", () => {
 	let sut: SUT;
@@ -16,6 +17,12 @@ describe("Header", () => {
 		expect(sut.banner()).toContainElement(sut.heading());
 		expect(sut.banner()).toContainElement(sut.mark());
 	});
+
+	test("shows the session menu", () => {
+		sut.show();
+
+		expect(sut.banner()).toContainElement(sut.sessionMenu());
+	});
 });
 
 class SUT {
@@ -25,7 +32,9 @@ class SUT {
 				baseUrl="http://localhost"
 				fetch={() => new Promise(() => {})}
 			>
-				<Header />
+				<FreshSession>
+					<Header />
+				</FreshSession>
 			</ApiProvider>,
 		);
 	}
@@ -40,5 +49,9 @@ class SUT {
 
 	mark() {
 		return screen.getByRole("status");
+	}
+
+	sessionMenu() {
+		return screen.getByRole("button", { name: "Sesión anónima" });
 	}
 }
