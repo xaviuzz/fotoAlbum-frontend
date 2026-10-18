@@ -29,3 +29,11 @@ export function useHealthCheck() {
 	}
 	return api.healthCheck;
 }
+
+export function useAlbums() {
+	const api = useContext(ApiContext);
+	if (api === null) {
+		throw new Error("useAlbums needs an ApiProvider");
+	}
+	return api.albums;
+}
