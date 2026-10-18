@@ -21,6 +21,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/album.list": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Lists every album of the catalogue */
+        post: operations["albumList"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/album.get": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Answers the album of a reference */
+        post: operations["albumGet"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -47,6 +81,43 @@ export interface components {
             body: {
                 /** @enum {string} */
                 status: "ok";
+            } | components["schemas"]["ErrorBody"];
+        };
+        Size: {
+            width: number;
+            height: number;
+        };
+        Album: {
+            reference: string;
+            commercialName: string;
+            albumSize: components["schemas"]["Size"];
+            pageSize: components["schemas"]["Size"];
+            pageCount: number;
+            /** @enum {string} */
+            binding: "hardcover" | "softcover";
+            /** @enum {string} */
+            orientation: "square" | "portrait" | "landscape";
+        };
+        AlbumListCall: {
+            header: components["schemas"]["CallHeader"];
+            body?: Record<string, never>;
+        };
+        AlbumListReply: {
+            header: components["schemas"]["ReplyHeader"];
+            body: {
+                albums: components["schemas"]["Album"][];
+            } | components["schemas"]["ErrorBody"];
+        };
+        AlbumGetCall: {
+            header: components["schemas"]["CallHeader"];
+            body: {
+                reference: string;
+            };
+        };
+        AlbumGetReply: {
+            header: components["schemas"]["ReplyHeader"];
+            body: {
+                album: components["schemas"]["Album"];
             } | components["schemas"]["ErrorBody"];
         };
         TransportError: components["schemas"]["ErrorBody"];
@@ -79,6 +150,72 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HealthCheckReply"];
+                };
+            };
+            /** @description unreadable JSON or missing callId */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TransportError"];
+                };
+            };
+        };
+    };
+    albumList: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AlbumListCall"];
+            };
+        };
+        responses: {
+            /** @description ok, or an error carried in the message */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AlbumListReply"];
+                };
+            };
+            /** @description unreadable JSON or missing callId */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TransportError"];
+                };
+            };
+        };
+    };
+    albumGet: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AlbumGetCall"];
+            };
+        };
+        responses: {
+            /** @description ok, or an error carried in the message */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AlbumGetReply"];
                 };
             };
             /** @description unreadable JSON or missing callId */
