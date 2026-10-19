@@ -43,3 +43,7 @@ export function useAlbums() {
 export function usePhotos() {
 	return useApi("usePhotos").photos;
 }
+
+export function useUserAlbums() {
+	return useApi("useUserAlbums").userAlbums;
+}
