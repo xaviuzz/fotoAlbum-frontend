@@ -30,7 +30,9 @@ Bun builds, serves and runs tests; no Vite, no Vitest. React, Tailwind v4 and sh
 
 `userEvent.upload` drops files whose type does not match the input's `accept`. Build test files with a type (`{ type: "image/jpeg" }`); without one the change handler never fires.
 
-After `shadcn add`, search `src/components/ui/` for `from "cn"`: the generator writes that import and adds a `cn` dependency. Point the import at `@/lib/utils` and drop `cn` from `package.json`.
+A test that asserts before a component's mount fetch settles leaves a pending update and an `act` warning. Either await the settled state, or give the test a `fetch` that never answers (`new Promise(() => {})`).
+
+After `shadcn add`, search `src/components/ui/` for `from "cn"`: the generator writes that import and adds a `cn` dependency. Point the import at `@/lib/utils`, drop `cn` from `package.json` and run `bun install` so `bun.lock` drops it too.
 
 `src/components/` groups one component per file by feature: `layout/`, `catalogue/`, `making/`; `ui/` is shadcn. What is not a component (labels, helpers) lives in `src/lib/`. Decision and why: umbrella `.claude/decisions.md`, "Components grouped by feature".
 
