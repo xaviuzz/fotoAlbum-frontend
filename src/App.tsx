@@ -1,6 +1,6 @@
 import { Route, Routes } from "react-router";
 import { Header } from "@/components/layout/Header";
-import { SessionGate } from "@/components/layout/SessionGate";
+import { UserAlbumGate } from "@/components/layout/UserAlbumGate";
 import { HomePage } from "@/pages/HomePage";
 import { MakingPage } from "@/pages/MakingPage";
 
@@ -8,12 +8,12 @@ export function App() {
 	return (
 		<>
 			<Header />
-			<SessionGate>
+			<UserAlbumGate>
 				<Routes>
 					<Route path="/" element={<HomePage />} />
-					<Route path="/confeccion/:reference" element={<MakingPage />} />
+					<Route path="/confeccion" element={<MakingPage />} />
 				</Routes>
-			</SessionGate>
+			</UserAlbumGate>
 		</>
 	);
 }

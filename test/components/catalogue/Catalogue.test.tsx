@@ -1,12 +1,12 @@
 import { beforeEach, describe, expect, test } from "bun:test";
 import { render, screen } from "@testing-library/react";
-import { MemoryRouter } from "react-router";
+import userEvent from "@testing-library/user-event";
 import {
 	Catalogue,
 	type CatalogueReading,
 } from "@/components/catalogue/Catalogue";
 import { PresentedAlbum } from "@/lib/PresentedAlbum";
-import { FreshSession } from "../../support/FreshSession";
+import { UserAlbumHost } from "../../support/UserAlbumHost";
 
 const album = new PresentedAlbum({
 	reference: "PT-150",
@@ -48,16 +48,31 @@ describe("Catalogue", () => {
 
 		expect(sut.errorMessage()).toBeInTheDocument();
 	});
+
+	test("shows no alert while every card can still be pressed", () => {
+		sut.show({ status: "ok", albums: [album] });
+
+		expect(sut.alerts()).toHaveLength(0);
+	});
+
+	test("shows an alert and keeps the cards when a user album cannot be created", async () => {
+		sut.show({ status: "ok", albums: [album] });
+
+		await sut.pressCard();
+
+		expect(await sut.creationAlert()).toHaveTextContent(
+			"No se pudo crear el álbum",
+		);
+		expect(sut.cards()).toHaveLength(1);
+	});
 });
 
 class SUT {
 	show(reading: CatalogueReading) {
 		render(
-			<FreshSession>
-				<MemoryRouter>
-					<Catalogue reading={reading} />
-				</MemoryRouter>
-			</FreshSession>,
+			<UserAlbumHost fetch={refusal}>
+				<Catalogue reading={reading} />
+			</UserAlbumHost>,
 		);
 	}
 
@@ -66,7 +81,19 @@ class SUT {
 	}
 
 	cards() {
-		return screen.queryAllByRole("link");
+		return screen.queryAllByRole("button");
+	}
+
+	pressCard() {
+		return userEvent.click(this.cards()[0]);
+	}
+
+	alerts() {
+		return screen.queryAllByRole("alert");
+	}
+
+	creationAlert() {
+		return screen.findByRole("alert");
 	}
 
 	emptyMessage() {
@@ -76,4 +103,15 @@ class SUT {
 	errorMessage() {
 		return screen.getByRole("alert");
 	}
+}
+
+async function refusal(request: Request) {
+	const call = await request.json();
+	return new Response(
+		JSON.stringify({
+			header: { callId: call.header.callId, status: "error" },
+			body: { code: "INTERNAL_ERROR", message: "failed" },
+		}),
+		{ headers: { "content-type": "application/json" } },
+	);
 }

@@ -1,9 +1,7 @@
 import { beforeEach, describe, expect, test } from "bun:test";
 import { render, screen } from "@testing-library/react";
-import { MemoryRouter } from "react-router";
-import { ApiProvider } from "@/api/ApiContext";
 import { HomePage } from "@/pages/HomePage";
-import { FreshSession } from "../support/FreshSession";
+import { UserAlbumHost } from "../support/UserAlbumHost";
 
 const albums = [
 	{
@@ -67,13 +65,9 @@ class SUT {
 
 	show() {
 		render(
-			<FreshSession>
-				<ApiProvider baseUrl="http://localhost" fetch={() => this.answer()}>
-					<MemoryRouter>
-						<HomePage />
-					</MemoryRouter>
-				</ApiProvider>
-			</FreshSession>,
+			<UserAlbumHost fetch={() => this.answer()}>
+				<HomePage />
+			</UserAlbumHost>,
 		);
 	}
 
@@ -82,6 +76,6 @@ class SUT {
 	}
 
 	cards() {
-		return screen.findAllByRole("link");
+		return screen.findAllByRole("button");
 	}
 }

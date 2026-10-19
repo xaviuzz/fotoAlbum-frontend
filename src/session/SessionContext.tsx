@@ -4,7 +4,6 @@ import type { SessionStore } from "@/lib/SessionStore";
 
 type SessionHandle = {
 	session: Session;
-	choose: (reference: string) => void;
 	restart: () => void;
 };
 
@@ -23,11 +22,10 @@ export function SessionProvider({
 		store.save(next);
 		setSession(next);
 	};
-	const choose = (reference: string) => keep(session.choosing(reference));
 	const restart = () => keep(session.startingOver());
 
 	return (
-		<SessionContext.Provider value={{ session, choose, restart }}>
+		<SessionContext.Provider value={{ session, restart }}>
 			{children}
 		</SessionContext.Provider>
 	);

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import type { AlbumsAnswer } from "@/api/Albums";
 import { AlbumRow } from "@/components/catalogue/AlbumRow";
 import { Alert, AlertTitle } from "@/components/ui/alert";
@@ -6,7 +7,10 @@ import { Empty, EmptyHeader, EmptyTitle } from "@/components/ui/empty";
 export type CatalogueReading = "loading" | AlbumsAnswer;
 
 export function Catalogue({ reading }: { reading: CatalogueReading }) {
-	let content = <AlbumRow albums={[]} />;
+	const [hasFailedCreating, setHasFailedCreating] = useState(false);
+	const failCreating = () => setHasFailedCreating(true);
+
+	let content = <AlbumRow albums={[]} onFailure={failCreating} />;
 	if (reading === "loading") {
 		content = (
 			<p
@@ -32,7 +36,20 @@ export function Catalogue({ reading }: { reading: CatalogueReading }) {
 			</Empty>
 		);
 	} else {
-		content = <AlbumRow albums={reading.albums} />;
+		let creationAlert = null;
+		if (hasFailedCreating) {
+			creationAlert = (
+				<Alert variant="destructive">
+					<AlertTitle>No se pudo crear el álbum</AlertTitle>
+				</Alert>
+			);
+		}
+		content = (
+			<>
+				{creationAlert}
+				<AlbumRow albums={reading.albums} onFailure={failCreating} />
+			</>
+		);
 	}
 	return content;
 }

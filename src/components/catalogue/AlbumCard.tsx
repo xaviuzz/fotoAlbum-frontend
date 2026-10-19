@@ -1,15 +1,40 @@
-import { Link } from "react-router";
+import { useState } from "react";
+import { useNavigate } from "react-router";
+import { useUserAlbums } from "@/api/ApiContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { PresentedAlbum } from "@/lib/PresentedAlbum";
-import { useSession } from "@/session/SessionContext";
+import { useCurrentUserAlbum } from "@/userAlbum/UserAlbumContext";
 
-export function AlbumCard({ album }: { album: PresentedAlbum }) {
-	const { choose } = useSession();
+export function AlbumCard({
+	album,
+	onFailure,
+}: {
+	album: PresentedAlbum;
+	onFailure: () => void;
+}) {
+	const userAlbums = useUserAlbums();
+	const { adopt } = useCurrentUserAlbum();
+	const navigate = useNavigate();
+	const [isCreating, setIsCreating] = useState(false);
+
+	const create = async () => {
+		setIsCreating(true);
+		const answer = await userAlbums.create(album.reference);
+		if (answer.status === "ok") {
+			adopt(answer.userAlbum);
+			navigate("/confeccion");
+		} else {
+			onFailure();
+			setIsCreating(false);
+		}
+	};
+
 	return (
-		<Link
-			to={`/confeccion/${album.reference}`}
-			className="w-full"
-			onClick={() => choose(album.reference)}
+		<button
+			type="button"
+			className="w-full text-left disabled:opacity-50"
+			disabled={isCreating}
+			onClick={create}
 		>
 			<Card className="h-full">
 				<CardHeader>
@@ -21,6 +46,6 @@ export function AlbumCard({ album }: { album: PresentedAlbum }) {
 					<span>{album.bindingLabel()}</span>
 				</CardContent>
 			</Card>
-		</Link>
+		</button>
 	);
 }

@@ -2,18 +2,6 @@ import { describe, expect, test } from "bun:test";
 import { Session } from "@/lib/Session";
 
 describe("Session", () => {
-	test("belongs to the catalogue until an album is chosen", () => {
-		const session = Session.start();
-
-		expect(session.path()).toBe("/");
-	});
-
-	test("belongs to the making page of the chosen album", () => {
-		const session = Session.start().choosing("SQ-210");
-
-		expect(session.path()).toBe("/confeccion/SQ-210");
-	});
-
 	test("starts every time with a different identity", () => {
 		const first = Session.start();
 		const second = Session.start();
@@ -22,46 +10,46 @@ describe("Session", () => {
 	});
 
 	test("is restored from its serialized text", () => {
-		const session = Session.start().choosing("PT-150");
-
-		const restored = Session.restore(session.serialize());
-
-		expect(restored.path()).toBe("/confeccion/PT-150");
-		expect(restored.avatarColor()).toBe(session.avatarColor());
-	});
-
-	test("restores a session without a chosen album", () => {
 		const session = Session.start();
 
 		const restored = Session.restore(session.serialize());
 
-		expect(restored.path()).toBe("/");
+		expect(restored.serialize()).toBe(session.serialize());
 		expect(restored.avatarColor()).toBe(session.avatarColor());
+	});
+
+	test("keeps only its identity when restoring text that names a chosen album", () => {
+		const text = '{"identity":"abc","chosenReference":"SQ-210"}';
+
+		const restored = Session.restore(text);
+
+		expect(restored.serialize()).toBe('{"identity":"abc"}');
 	});
 
 	test("starts a new session when the text is not a session", () => {
 		const texts = ["", "not json", "null", "[]", '{"identity":7}'];
 
 		for (const text of texts) {
-			expect(Session.restore(text).path()).toBe("/");
+			expect(Session.restore(text).callHeader("c").sessionId).toMatch(
+				/^[0-9a-f-]{36}$/,
+			);
 		}
 	});
 
-	test("forgets the chosen album when starting over", () => {
-		const session = Session.start().choosing("SQ-210");
+	test("takes a new identity when starting over", () => {
+		const session = Session.start();
 
 		const fresh = session.startingOver();
 
-		expect(fresh.path()).toBe("/");
 		expect(fresh.serialize()).not.toBe(session.serialize());
 	});
 
 	test("gives the same avatar color to the same identity", () => {
 		const session = Session.start();
 
-		expect(session.choosing("SQ-210").avatarColor()).toBe(
-			session.avatarColor(),
-		);
+		const restored = Session.restore(session.serialize());
+
+		expect(restored.avatarColor()).toBe(session.avatarColor());
 	});
 
 	test("gives different identities more than one avatar color", () => {

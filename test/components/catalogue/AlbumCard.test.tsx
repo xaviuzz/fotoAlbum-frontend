@@ -1,22 +1,29 @@
 import { beforeEach, describe, expect, test } from "bun:test";
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { MemoryRouter } from "react-router";
+import { MemoryRouter, useLocation } from "react-router";
+import { ApiProvider } from "@/api/ApiContext";
 import { AlbumCard } from "@/components/catalogue/AlbumCard";
 import { PresentedAlbum } from "@/lib/PresentedAlbum";
-import { SessionStore } from "@/lib/SessionStore";
-import { SessionProvider } from "@/session/SessionContext";
-import { FakeStorage } from "../../support/FakeStorage";
+import { UserAlbumContext } from "@/userAlbum/UserAlbumContext";
+import { FreshSession } from "../../support/FreshSession";
 
-const portraitAlbum = new PresentedAlbum({
+const portraitUserAlbum = {
+	id: "0190-user-album",
 	reference: "PT-150",
 	commercialName: "Retrato de bolsillo",
 	albumSize: { width: 150, height: 210 },
 	pageSize: { width: 140, height: 200 },
 	pageCount: 20,
-	binding: "softcover",
-	orientation: "portrait",
-});
+	binding: "softcover" as const,
+	orientation: "portrait" as const,
+};
+
+const portraitAlbum = new PresentedAlbum(portraitUserAlbum);
+
+function Where() {
+	return <output aria-label="Dirección">{useLocation().pathname}</output>;
+}
 
 describe("AlbumCard", () => {
 	let sut: SUT;
@@ -25,58 +32,138 @@ describe("AlbumCard", () => {
 		sut = new SUT();
 	});
 
-	test("is one link to the making page of the album", () => {
-		sut.show(portraitAlbum);
-
-		expect(sut.link()).toHaveAttribute("href", "/confeccion/PT-150");
-	});
-
 	test("shows the commercial name, size, page count and binding", () => {
 		sut.show(portraitAlbum);
 
-		expect(sut.link()).toHaveTextContent("Retrato de bolsillo");
-		expect(sut.link()).toHaveTextContent("150 × 210 mm");
-		expect(sut.link()).toHaveTextContent("20 páginas");
-		expect(sut.link()).toHaveTextContent("Tapa blanda");
+		expect(sut.card()).toHaveTextContent("Retrato de bolsillo");
+		expect(sut.card()).toHaveTextContent("150 × 210 mm");
+		expect(sut.card()).toHaveTextContent("20 páginas");
+		expect(sut.card()).toHaveTextContent("Tapa blanda");
 	});
 
-	test("records the album in the session when clicked", async () => {
+	test("creates nothing until it is pressed", () => {
 		sut.show(portraitAlbum);
 
-		await sut.click();
-
-		expect(sut.chosenPath()).toBe("/confeccion/PT-150");
+		expect(sut.referencesAsked()).toEqual([]);
 	});
 
-	test("records nothing until it is clicked", () => {
+	test("asks for a user album of its model when pressed", async () => {
 		sut.show(portraitAlbum);
 
-		expect(sut.chosenPath()).toBe("/");
+		await sut.press();
+
+		expect(sut.referencesAsked()).toEqual(["PT-150"]);
+	});
+
+	test("disables itself while the user album is being created", async () => {
+		sut.leaveUnanswered();
+		sut.show(portraitAlbum);
+
+		await sut.press();
+
+		expect(sut.card()).toBeDisabled();
+	});
+
+	test("hands the user album over and goes to the making page when created", async () => {
+		sut.show(portraitAlbum);
+
+		await sut.press();
+
+		expect(await sut.location("/confeccion")).toBeInTheDocument();
+		expect(sut.adopted()).toEqual([new PresentedAlbum(portraitUserAlbum)]);
+	});
+
+	test("reports the failure, stays and enables itself again when it cannot be created", async () => {
+		sut.failCreating();
+		sut.show(portraitAlbum);
+
+		await sut.press();
+
+		await waitFor(() => expect(sut.card()).toBeEnabled());
+		expect(sut.failures()).toBe(1);
+		expect(sut.adopted()).toEqual([]);
+		expect(await sut.location("/")).toBeInTheDocument();
 	});
 });
 
 class SUT {
-	private readonly store = new SessionStore(new FakeStorage());
+	private readonly references: string[] = [];
+	private readonly userAlbums: PresentedAlbum[] = [];
+	private failureCount = 0;
+	private isAnswering = true;
+	private isFailing = false;
+
+	leaveUnanswered() {
+		this.isAnswering = false;
+	}
+
+	failCreating() {
+		this.isFailing = true;
+	}
 
 	show(album: PresentedAlbum) {
+		const fetch = async (request: Request) => {
+			const call = await request.json();
+			this.references.push(call.body.reference);
+			let answer = new Promise<Response>(() => {});
+			if (this.isAnswering) {
+				answer = Promise.resolve(this.reply(call.header.callId));
+			}
+			return answer;
+		};
+		const adopt = (userAlbum: PresentedAlbum) => {
+			this.userAlbums.push(userAlbum);
+		};
+		const onFailure = () => {
+			this.failureCount += 1;
+		};
 		render(
-			<SessionProvider store={this.store}>
-				<MemoryRouter>
-					<AlbumCard album={album} />
-				</MemoryRouter>
-			</SessionProvider>,
+			<FreshSession>
+				<ApiProvider baseUrl="http://localhost" fetch={fetch}>
+					<MemoryRouter>
+						<UserAlbumContext.Provider value={{ userAlbum: null, adopt }}>
+							<AlbumCard album={album} onFailure={onFailure} />
+							<Where />
+						</UserAlbumContext.Provider>
+					</MemoryRouter>
+				</ApiProvider>
+			</FreshSession>,
 		);
 	}
 
-	link() {
-		return screen.getByRole("link");
+	card() {
+		return screen.getByRole("button", { name: /Retrato de bolsillo/ });
 	}
 
-	click() {
-		return userEvent.click(this.link());
+	press() {
+		return userEvent.click(this.card());
 	}
 
-	chosenPath() {
-		return this.store.load().path();
+	location(path: string) {
+		return screen.findByText(path, { selector: "output" });
+	}
+
+	referencesAsked() {
+		return this.references;
+	}
+
+	adopted() {
+		return this.userAlbums;
+	}
+
+	failures() {
+		return this.failureCount;
+	}
+
+	private reply(callId: string) {
+		let body: unknown = { userAlbum: portraitUserAlbum };
+		let status = "ok";
+		if (this.isFailing) {
+			body = { code: "INTERNAL_ERROR", message: "failed" };
+			status = "error";
+		}
+		return new Response(JSON.stringify({ header: { callId, status }, body }), {
+			headers: { "content-type": "application/json" },
+		});
 	}
 }

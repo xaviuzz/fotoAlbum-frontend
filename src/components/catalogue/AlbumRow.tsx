@@ -3,7 +3,13 @@ import type { PresentedAlbum } from "@/lib/PresentedAlbum";
 
 const MAX_ALBUMS_THAT_FIT = 3;
 
-export function AlbumRow({ albums }: { albums: PresentedAlbum[] }) {
+export function AlbumRow({
+	albums,
+	onFailure,
+}: {
+	albums: PresentedAlbum[];
+	onFailure: () => void;
+}) {
 	let cardSlot = "flex w-64 shrink-0";
 	if (albums.length <= MAX_ALBUMS_THAT_FIT) {
 		cardSlot = "flex min-w-0 flex-1";
@@ -12,7 +18,7 @@ export function AlbumRow({ albums }: { albums: PresentedAlbum[] }) {
 	for (const album of albums) {
 		cards.push(
 			<li key={album.reference} className={cardSlot}>
-				<AlbumCard album={album} />
+				<AlbumCard album={album} onFailure={onFailure} />
 			</li>,
 		);
 	}

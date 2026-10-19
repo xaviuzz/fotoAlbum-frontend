@@ -2,6 +2,8 @@ import { beforeEach, describe, expect, test } from "bun:test";
 import { Session } from "@/lib/Session";
 import { SessionStore } from "@/lib/SessionStore";
 
+const UUID = /^[0-9a-f-]{36}$/;
+
 describe("SessionStore", () => {
 	let sut: SUT;
 
@@ -10,25 +12,26 @@ describe("SessionStore", () => {
 	});
 
 	test("starts a session when nothing was stored", () => {
-		expect(sut.loaded().path()).toBe("/");
+		expect(sut.loadedIdentity()).toMatch(UUID);
 	});
 
 	test("loads the session that was saved", () => {
-		sut.save(Session.start().choosing("LD-297"));
+		const saved = Session.start();
+		sut.save(saved);
 
-		expect(sut.loaded().path()).toBe("/confeccion/LD-297");
+		expect(sut.loaded().serialize()).toBe(saved.serialize());
 	});
 
 	test("starts a session when the stored text is not a session", () => {
 		sut.storeText("garbage");
 
-		expect(sut.loaded().path()).toBe("/");
+		expect(sut.loadedIdentity()).toMatch(UUID);
 	});
 
 	test("starts a session when the browser refuses to read", () => {
 		sut.refuseStorage();
 
-		expect(sut.loaded().path()).toBe("/");
+		expect(sut.loadedIdentity()).toMatch(UUID);
 	});
 
 	test("saves without failing when the browser refuses to write", () => {
@@ -62,6 +65,10 @@ class SUT {
 
 	loaded() {
 		return this.store.load();
+	}
+
+	loadedIdentity() {
+		return this.store.load().callHeader("c").sessionId;
 	}
 
 	storeText(text: string) {

@@ -6,13 +6,10 @@ import { SessionProvider, useSession } from "@/session/SessionContext";
 import { FakeStorage } from "../support/FakeStorage";
 
 function SessionPanel() {
-	const { session, choose, restart } = useSession();
+	const { session, restart } = useSession();
 	return (
 		<>
-			<output>{session.path()}</output>
-			<button type="button" onClick={() => choose("SQ-210")}>
-				choose
-			</button>
+			<output>{session.callHeader("c").sessionId}</output>
 			<button type="button" onClick={() => restart()}>
 				restart
 			</button>
@@ -28,30 +25,25 @@ describe("SessionProvider", () => {
 	});
 
 	test("starts with the stored session", () => {
-		sut.store(Session.start().choosing("PT-150"));
+		const stored = Session.start();
+		sut.store(stored);
 
 		sut.show();
 
-		expect(sut.path()).toHaveTextContent("/confeccion/PT-150");
+		expect(sut.identity()).toHaveTextContent(stored.callHeader("c").sessionId);
 	});
 
-	test("records the chosen album and stores it", () => {
-		sut.show();
-
-		sut.choose();
-
-		expect(sut.path()).toHaveTextContent("/confeccion/SQ-210");
-		expect(sut.stored().path()).toBe("/confeccion/SQ-210");
-	});
-
-	test("forgets the chosen album when starting over", () => {
-		sut.store(Session.start().choosing("PT-150"));
+	test("takes a new identity when starting over and stores it", () => {
+		const stored = Session.start();
+		sut.store(stored);
 		sut.show();
 
 		sut.restart();
 
-		expect(sut.path()).toHaveTextContent("/");
-		expect(sut.stored().path()).toBe("/");
+		expect(sut.identity()).not.toHaveTextContent(
+			stored.callHeader("c").sessionId,
+		);
+		expect(sut.stored().serialize()).not.toBe(stored.serialize());
 	});
 });
 
@@ -76,15 +68,11 @@ class SUT {
 		);
 	}
 
-	choose() {
-		act(() => screen.getByRole("button", { name: "choose" }).click());
-	}
-
 	restart() {
 		act(() => screen.getByRole("button", { name: "restart" }).click());
 	}
 
-	path() {
+	identity() {
 		return screen.getByRole("status");
 	}
 

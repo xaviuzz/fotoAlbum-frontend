@@ -40,25 +40,21 @@ describe("SessionMenu", () => {
 	});
 
 	test("keeps the session when the confirmation is cancelled", async () => {
-		sut.chosen("PT-150");
 		sut.show();
 		await sut.chooseStartOver();
 
 		await sut.cancel();
 
 		expect(sut.confirmation()).not.toBeInTheDocument();
-		expect(sut.session().path()).toBe("/confeccion/PT-150");
 		expect(sut.session().serialize()).toBe(sut.initial());
 	});
 
 	test("starts a new session when the confirmation is accepted", async () => {
-		sut.chosen("PT-150");
 		sut.show();
 		await sut.chooseStartOver();
 
 		await sut.confirm();
 
-		expect(sut.session().path()).toBe("/");
 		expect(sut.session().serialize()).not.toBe(sut.initial());
 	});
 });
@@ -66,11 +62,6 @@ describe("SessionMenu", () => {
 class SUT {
 	private readonly store = new SessionStore(new FakeStorage());
 	private first = this.store.load();
-
-	chosen(reference: string) {
-		this.first = this.first.choosing(reference);
-		this.store.save(this.first);
-	}
 
 	show() {
 		this.store.save(this.first);
