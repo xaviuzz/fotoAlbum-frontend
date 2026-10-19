@@ -4,7 +4,7 @@ React app on Bun. Keeps a pinned copy of the backend's `openapi.yaml` and genera
 
 ## Commands
 
-- `bun run dev`: `dev.ts`, dev server on port 5173 (`PORT`) proxying `POST /health.check`, `POST /album.*`, `POST /photo.*` and `GET /photos/*` to `API_URL` (default `http://localhost:3000`) and serving `index.html` on any other path
+- `bun run dev`: `dev.ts`, dev server on port 5173 (`PORT`) proxying the routes listed in `dev.ts` to `API_URL` (default `http://localhost:3000`) and serving `index.html` on any other path
 - `bun run test`: `bun test`, with happy-dom and Testing Library preloaded from `test/setup.ts`
 - `bun run lint`: Biome check (lint and format); `bunx biome check --write .` fixes
 - `bun run typecheck`: `tsc --noEmit`
