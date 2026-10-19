@@ -36,6 +36,8 @@ After `shadcn add`, search `src/components/ui/` for `from "cn"`: the generator w
 
 `src/components/` groups one component per file by feature: `layout/`, `catalogue/`, `making/`; `ui/` is shadcn. What is not a component (labels, helpers) lives in `src/lib/`. Decision and why: umbrella `.claude/decisions.md`, "Components grouped by feature".
 
+A step that removes a method lists what else that method did (saving, navigating, notifying) and keeps a test for each effect that must survive.
+
 ## Skills
 
 Before writing or changing a component, read `.claude/skills/shadcn/SKILL.md` and `.claude/skills/vercel-react-best-practices/SKILL.md`; from a session started outside `frontend/` the Skill tool cannot load them. Check `src/components/ui/` and run `bunx --bun shadcn@latest add <component>` before styling markup by hand.
