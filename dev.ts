@@ -18,6 +18,8 @@ Bun.serve({
 		"/health.check": proxyTo("/health.check"),
 		"/album.list": proxyTo("/album.list"),
 		"/album.get": proxyTo("/album.get"),
+		"/userAlbum.create": proxyTo("/userAlbum.create"),
+		"/userAlbum.get": proxyTo("/userAlbum.get"),
 		"/photo.list": proxyTo("/photo.list"),
 		"/photo.upload": proxyTo("/photo.upload"),
 		"/photos/*": proxyKeepingPath,

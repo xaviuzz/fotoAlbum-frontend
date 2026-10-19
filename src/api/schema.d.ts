@@ -55,6 +55,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/userAlbum.create": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Makes the user album of the session from a catalogue model */
+        post: operations["userAlbumCreate"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/userAlbum.get": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Answers the user album of the session */
+        post: operations["userAlbumGet"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/photo.list": {
         parameters: {
             query?: never;
@@ -131,7 +165,7 @@ export interface components {
         };
         ErrorBody: {
             /** @enum {string} */
-            code: "INVALID_BODY" | "ALBUM_NOT_FOUND" | "SESSION_REQUIRED" | "INTERNAL_ERROR";
+            code: "INVALID_BODY" | "ALBUM_NOT_FOUND" | "SESSION_REQUIRED" | "USER_ALBUM_ALREADY_EXISTS" | "USER_ALBUM_NOT_FOUND" | "INTERNAL_ERROR";
             message: string;
         };
         HealthCheckReply: {
@@ -176,6 +210,40 @@ export interface components {
             header: components["schemas"]["ReplyHeader"];
             body: {
                 album: components["schemas"]["Album"];
+            } | components["schemas"]["ErrorBody"];
+        };
+        UserAlbum: {
+            id: string;
+            reference: string;
+            commercialName: string;
+            albumSize: components["schemas"]["Size"];
+            pageSize: components["schemas"]["Size"];
+            pageCount: number;
+            /** @enum {string} */
+            binding: "hardcover" | "softcover";
+            /** @enum {string} */
+            orientation: "square" | "portrait" | "landscape";
+        };
+        UserAlbumCreateCall: {
+            header: components["schemas"]["CallHeader"];
+            body: {
+                reference: string;
+            };
+        };
+        UserAlbumCreateReply: {
+            header: components["schemas"]["ReplyHeader"];
+            body: {
+                userAlbum: components["schemas"]["UserAlbum"];
+            } | components["schemas"]["ErrorBody"];
+        };
+        UserAlbumGetCall: {
+            header: components["schemas"]["CallHeader"];
+            body?: Record<string, never>;
+        };
+        UserAlbumGetReply: {
+            header: components["schemas"]["ReplyHeader"];
+            body: {
+                userAlbum: components["schemas"]["UserAlbum"];
             } | components["schemas"]["ErrorBody"];
         };
         Photo: {
@@ -306,6 +374,72 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AlbumGetReply"];
+                };
+            };
+            /** @description unreadable JSON or missing callId */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TransportError"];
+                };
+            };
+        };
+    };
+    userAlbumCreate: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UserAlbumCreateCall"];
+            };
+        };
+        responses: {
+            /** @description ok, or an error carried in the message */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserAlbumCreateReply"];
+                };
+            };
+            /** @description unreadable JSON or missing callId */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TransportError"];
+                };
+            };
+        };
+    };
+    userAlbumGet: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UserAlbumGetCall"];
+            };
+        };
+        responses: {
+            /** @description ok, or an error carried in the message */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserAlbumGetReply"];
                 };
             };
             /** @description unreadable JSON or missing callId */
