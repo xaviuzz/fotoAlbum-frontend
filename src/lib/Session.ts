@@ -46,6 +46,10 @@ export class Session {
 		return path;
 	}
 
+	callHeader(callId: string) {
+		return { callId, sessionId: this.identity };
+	}
+
 	avatarColor() {
 		return avatarColorOf(this.identity);
 	}

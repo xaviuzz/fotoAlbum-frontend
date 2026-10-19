@@ -3,6 +3,7 @@ import createClient from "openapi-fetch";
 import { type Album, Albums } from "@/api/Albums";
 import type { paths } from "@/api/schema";
 import { PresentedAlbum } from "@/lib/PresentedAlbum";
+import { Session } from "@/lib/Session";
 
 const squareAlbum: Album = {
 	reference: "SQ-210",
@@ -41,6 +42,13 @@ describe("Albums list", () => {
 		expect(sut.methodPosted()).toBe("POST");
 		expect(first).not.toBe("");
 		expect(first).not.toBe(second);
+	});
+
+	test("carries the session identity", async () => {
+		await sut.list();
+		await sut.get("SQ-210");
+
+		expect(sut.sessionsPosted()).toEqual(["session-1", "session-1"]);
 	});
 
 	test("answers the error code when the reply is an error", async () => {
@@ -121,6 +129,7 @@ class SUT {
 		path: string;
 		method: string;
 		callId: string;
+		sessionId: string | undefined;
 		reference: string | undefined;
 	}[] = [];
 	private answered: unknown;
@@ -135,12 +144,16 @@ class SUT {
 					path: new URL(request.url).pathname,
 					method: request.method,
 					callId: call.header.callId,
+					sessionId: call.header.sessionId,
 					reference: call.body?.reference,
 				});
 				return this.answer(call.header.callId);
 			},
 		});
-		this.albums = new Albums(client);
+		this.albums = new Albums(
+			client,
+			Session.restore('{"identity":"session-1"}'),
+		);
 	}
 
 	answerWith(answer: Answer) {
@@ -175,6 +188,10 @@ class SUT {
 
 	referencePosted() {
 		return this.received[0]?.reference;
+	}
+
+	sessionsPosted() {
+		return this.received.map((call) => call.sessionId);
 	}
 
 	callIdsPosted() {

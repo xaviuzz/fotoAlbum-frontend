@@ -2,6 +2,7 @@ import createClient, { type ClientOptions } from "openapi-fetch";
 import { createContext, type ReactNode, useContext, useMemo } from "react";
 import { Api } from "@/api/Api";
 import type { paths } from "@/api/schema";
+import { useSession } from "@/session/SessionContext";
 
 const ApiContext = createContext<Api | null>(null);
 
@@ -14,26 +15,31 @@ export function ApiProvider({
 	fetch?: ClientOptions["fetch"];
 	children: ReactNode;
 }) {
+	const { session } = useSession();
 	const api = useMemo(() => {
 		const client = createClient<paths>({ baseUrl, fetch });
-		return new Api(client);
-	}, [baseUrl, fetch]);
+		return new Api(client, session);
+	}, [baseUrl, fetch, session]);
 
 	return <ApiContext.Provider value={api}>{children}</ApiContext.Provider>;
 }
 
-export function useHealthCheck() {
+function useApi(hook: string) {
 	const api = useContext(ApiContext);
 	if (api === null) {
-		throw new Error("useHealthCheck needs an ApiProvider");
+		throw new Error(`${hook} needs an ApiProvider`);
 	}
-	return api.healthCheck;
+	return api;
+}
+
+export function useHealthCheck() {
+	return useApi("useHealthCheck").healthCheck;
 }
 
 export function useAlbums() {
-	const api = useContext(ApiContext);
-	if (api === null) {
-		throw new Error("useAlbums needs an ApiProvider");
-	}
-	return api.albums;
+	return useApi("useAlbums").albums;
+}
+
+export function usePhotos() {
+	return useApi("usePhotos").photos;
 }

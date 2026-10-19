@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, test } from "bun:test";
 import createClient from "openapi-fetch";
 import { type Health, HealthCheck } from "@/api/HealthCheck";
 import type { paths } from "@/api/schema";
+import { Session } from "@/lib/Session";
 
 describe("HealthCheck", () => {
 	let sut: SUT;
@@ -42,6 +43,12 @@ describe("HealthCheck", () => {
 		expect(sut.health()).toBe("error");
 	});
 
+	test("carries the session identity", async () => {
+		await sut.check();
+
+		expect(sut.sessionsPosted()).toEqual(["session-1"]);
+	});
+
 	test("posts a fresh callId to /health.check", async () => {
 		await sut.check();
 		await sut.check();
@@ -58,7 +65,12 @@ type Answer = (callId: string) => Promise<Response>;
 
 class SUT {
 	private answer: Answer = async (callId) => okReply(callId);
-	private received: { path: string; method: string; callId: string }[] = [];
+	private received: {
+		path: string;
+		method: string;
+		callId: string;
+		sessionId: string | undefined;
+	}[] = [];
 	private result: Health | undefined;
 	private readonly healthCheck: HealthCheck;
 
@@ -71,11 +83,15 @@ class SUT {
 					path: new URL(request.url).pathname,
 					method: request.method,
 					callId: call.header.callId,
+					sessionId: call.header.sessionId,
 				});
 				return this.answer(call.header.callId);
 			},
 		});
-		this.healthCheck = new HealthCheck(client);
+		this.healthCheck = new HealthCheck(
+			client,
+			Session.restore('{"identity":"session-1"}'),
+		);
 	}
 
 	answerOk() {
@@ -115,6 +131,10 @@ class SUT {
 
 	methodPosted() {
 		return this.received[0]?.method;
+	}
+
+	sessionsPosted() {
+		return this.received.map((call) => call.sessionId);
 	}
 
 	callIdsPosted() {

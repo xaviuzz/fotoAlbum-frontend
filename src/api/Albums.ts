@@ -1,6 +1,7 @@
 import type { Client } from "openapi-fetch";
 import type { components, paths } from "@/api/schema";
 import { PresentedAlbum } from "@/lib/PresentedAlbum";
+import type { Session } from "@/lib/Session";
 
 export type Album = components["schemas"]["Album"];
 export type AlbumErrorCode = components["schemas"]["ErrorBody"]["code"];
@@ -15,9 +16,11 @@ export type AlbumAnswer =
 
 export class Albums {
 	readonly #client: Client<paths>;
+	readonly #session: Session;
 
-	constructor(client: Client<paths>) {
+	constructor(client: Client<paths>, session: Session) {
 		this.#client = client;
+		this.#session = session;
 	}
 
 	async list(): Promise<AlbumsAnswer> {
@@ -25,7 +28,7 @@ export class Albums {
 		try {
 			const callId = crypto.randomUUID();
 			const reply = await this.#client.POST("/album.list", {
-				body: { header: { callId } },
+				body: { header: this.#session.callHeader(callId) },
 			});
 			const body = reply.data?.body;
 			if (body && "albums" in body) {
@@ -49,7 +52,10 @@ export class Albums {
 		try {
 			const callId = crypto.randomUUID();
 			const reply = await this.#client.POST("/album.get", {
-				body: { header: { callId }, body: { reference } },
+				body: {
+					header: this.#session.callHeader(callId),
+					body: { reference },
+				},
 			});
 			const body = reply.data?.body;
 			if (body && "album" in body) {
