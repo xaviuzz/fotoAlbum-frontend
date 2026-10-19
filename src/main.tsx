@@ -12,11 +12,11 @@ if (rootElement === null) {
 }
 
 createRoot(rootElement).render(
-	<ApiProvider baseUrl={window.location.origin}>
-		<SessionProvider store={SessionStore.inBrowser()}>
+	<SessionProvider store={SessionStore.inBrowser()}>
+		<ApiProvider baseUrl={window.location.origin}>
 			<BrowserRouter>
 				<App />
 			</BrowserRouter>
-		</SessionProvider>
-	</ApiProvider>,
+		</ApiProvider>
+	</SessionProvider>,
 );

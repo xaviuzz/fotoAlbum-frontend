@@ -67,13 +67,13 @@ class SUT {
 
 	show() {
 		render(
-			<ApiProvider baseUrl="http://localhost" fetch={() => this.answer()}>
-				<FreshSession>
+			<FreshSession>
+				<ApiProvider baseUrl="http://localhost" fetch={() => this.answer()}>
 					<MemoryRouter>
 						<HomePage />
 					</MemoryRouter>
-				</FreshSession>
-			</ApiProvider>,
+				</ApiProvider>
+			</FreshSession>,
 		);
 	}
 

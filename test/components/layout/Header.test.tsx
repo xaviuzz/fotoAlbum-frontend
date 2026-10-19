@@ -28,14 +28,14 @@ describe("Header", () => {
 class SUT {
 	show() {
 		render(
-			<ApiProvider
-				baseUrl="http://localhost"
-				fetch={() => new Promise(() => {})}
-			>
-				<FreshSession>
+			<FreshSession>
+				<ApiProvider
+					baseUrl="http://localhost"
+					fetch={() => new Promise(() => {})}
+				>
 					<Header />
-				</FreshSession>
-			</ApiProvider>,
+				</ApiProvider>
+			</FreshSession>,
 		);
 	}
 

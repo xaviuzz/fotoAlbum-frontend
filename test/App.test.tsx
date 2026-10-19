@@ -53,16 +53,16 @@ class SUT {
 
 	showAt(path: string) {
 		render(
-			<ApiProvider
-				baseUrl="http://localhost"
-				fetch={() => new Promise(() => {})}
-			>
-				<SessionProvider store={this.store}>
+			<SessionProvider store={this.store}>
+				<ApiProvider
+					baseUrl="http://localhost"
+					fetch={() => new Promise(() => {})}
+				>
 					<MemoryRouter initialEntries={[path]}>
 						<App />
 					</MemoryRouter>
-				</SessionProvider>
-			</ApiProvider>,
+				</ApiProvider>
+			</SessionProvider>,
 		);
 	}
 

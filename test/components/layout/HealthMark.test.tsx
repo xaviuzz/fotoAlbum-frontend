@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, test } from "bun:test";
 import { render, screen } from "@testing-library/react";
 import { ApiProvider } from "@/api/ApiContext";
 import { HealthMark } from "@/components/layout/HealthMark";
+import { FreshSession } from "../../support/FreshSession";
 
 describe("HealthMark", () => {
 	let sut: SUT;
@@ -66,9 +67,11 @@ class SUT {
 			return this.answer();
 		};
 		render(
-			<ApiProvider baseUrl="http://localhost" fetch={fetch}>
-				<HealthMark />
-			</ApiProvider>,
+			<FreshSession>
+				<ApiProvider baseUrl="http://localhost" fetch={fetch}>
+					<HealthMark />
+				</ApiProvider>
+			</FreshSession>,
 		);
 	}
 
