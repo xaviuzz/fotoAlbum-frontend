@@ -5,6 +5,7 @@ import {
 	AlbumMaking,
 	type AlbumMakingReading,
 } from "@/components/making/AlbumMaking";
+import { PhotoTray } from "@/components/making/PhotoTray";
 
 export function MakingPage() {
 	const { reference = "" } = useParams();
@@ -25,8 +26,16 @@ export function MakingPage() {
 	}, [albums, reference]);
 
 	return (
-		<main aria-label="Confección" className="flex flex-col gap-4 p-6">
-			<AlbumMaking reading={reading} />
+		<main
+			aria-label="Confección"
+			className="flex h-[calc(100svh-4rem)] gap-4 p-6"
+		>
+			<div className="w-1/4 min-w-0">
+				<PhotoTray />
+			</div>
+			<div className="flex min-w-0 flex-1 flex-col gap-4">
+				<AlbumMaking reading={reading} />
+			</div>
 		</main>
 	);
 }

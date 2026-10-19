@@ -3,6 +3,7 @@ import { render, screen } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router";
 import { ApiProvider } from "@/api/ApiContext";
 import { MakingPage } from "@/pages/MakingPage";
+import { FreshSession } from "../support/FreshSession";
 
 const album = {
 	reference: "PT-150",
@@ -38,6 +39,15 @@ describe("MakingPage", () => {
 		expect(sut.referenceAsked()).toBe("PT-150");
 	});
 
+	test("shows the photo tray beside the album", async () => {
+		sut.answerAlbum();
+
+		sut.show("PT-150");
+		await sut.heading("Retrato de bolsillo");
+
+		expect(sut.photoTray()).toBeInTheDocument();
+	});
+
 	test("offers no link back to the catalogue", async () => {
 		sut.answerAlbum();
 
@@ -63,13 +73,15 @@ class SUT {
 			return this.answer();
 		};
 		render(
-			<ApiProvider baseUrl="http://localhost" fetch={fetch}>
-				<MemoryRouter initialEntries={[`/confeccion/${reference}`]}>
-					<Routes>
-						<Route path="/confeccion/:reference" element={<MakingPage />} />
-					</Routes>
-				</MemoryRouter>
-			</ApiProvider>,
+			<FreshSession>
+				<ApiProvider baseUrl="http://localhost" fetch={fetch}>
+					<MemoryRouter initialEntries={[`/confeccion/${reference}`]}>
+						<Routes>
+							<Route path="/confeccion/:reference" element={<MakingPage />} />
+						</Routes>
+					</MemoryRouter>
+				</ApiProvider>
+			</FreshSession>,
 		);
 	}
 
@@ -79,6 +91,10 @@ class SUT {
 
 	page() {
 		return screen.findByRole("main", { name: "Confección" });
+	}
+
+	photoTray() {
+		return screen.getByRole("complementary", { name: "Mis fotos" });
 	}
 
 	links() {
