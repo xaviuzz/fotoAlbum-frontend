@@ -46,6 +46,11 @@ export class PresentedAlbum {
 		return this.sizeLabel(this.album.pageSize);
 	}
 
+	pageProportion() {
+		const { width, height } = this.album.pageSize;
+		return `${width} / ${height}`;
+	}
+
 	private sizeLabel(size: Album["albumSize"]) {
 		return `${size.width} × ${size.height} mm`;
 	}

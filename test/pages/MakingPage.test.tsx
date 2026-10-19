@@ -1,11 +1,13 @@
 import { beforeEach, describe, expect, test } from "bun:test";
 import { render, screen } from "@testing-library/react";
-import { MemoryRouter, Route, Routes } from "react-router";
+import { MemoryRouter } from "react-router";
 import { ApiProvider } from "@/api/ApiContext";
+import { PresentedAlbum } from "@/lib/PresentedAlbum";
 import { MakingPage } from "@/pages/MakingPage";
+import { UserAlbumContext } from "@/userAlbum/UserAlbumContext";
 import { FreshSession } from "../support/FreshSession";
 
-const album = {
+const userAlbum = new PresentedAlbum({
 	reference: "PT-150",
 	commercialName: "Retrato de bolsillo",
 	albumSize: { width: 150, height: 210 },
@@ -13,7 +15,7 @@ const album = {
 	pageCount: 20,
 	binding: "softcover",
 	orientation: "portrait",
-};
+});
 
 describe("MakingPage", () => {
 	let sut: SUT;
@@ -22,63 +24,53 @@ describe("MakingPage", () => {
 		sut = new SUT();
 	});
 
-	test("shows the commercial name as heading", async () => {
-		sut.answerAlbum();
+	test("shows the commercial name of the user album as heading", () => {
+		sut.show();
 
-		sut.show("PT-150");
-
-		expect(await sut.heading("Retrato de bolsillo")).toBeInTheDocument();
+		expect(sut.heading("Retrato de bolsillo")).toBeInTheDocument();
 	});
 
-	test("asks for the album of the reference in the path", async () => {
-		sut.answerAlbum();
+	test("shows the first face of the user album", () => {
+		sut.show();
 
-		sut.show("PT-150");
-		await sut.page();
-
-		expect(sut.referenceAsked()).toBe("PT-150");
+		expect(sut.face()).toHaveAccessibleName("Cara 1");
+		expect(sut.position()).toHaveTextContent("1/20");
 	});
 
-	test("shows the photo tray beside the album", async () => {
-		sut.answerAlbum();
-
-		sut.show("PT-150");
-		await sut.heading("Retrato de bolsillo");
+	test("shows the photo tray beside the user album", () => {
+		sut.show();
 
 		expect(sut.photoTray()).toBeInTheDocument();
 	});
 
-	test("offers no link back to the catalogue", async () => {
-		sut.answerAlbum();
+	test("does not ask the catalogue for the album", () => {
+		sut.show();
 
-		sut.show("PT-150");
-		await sut.heading("Retrato de bolsillo");
+		expect(sut.pathsAsked()).not.toContain("/album.get");
+	});
+
+	test("offers no link back to the catalogue", () => {
+		sut.show();
 
 		expect(sut.links()).toHaveLength(0);
 	});
 });
 
 class SUT {
-	private answer: () => Promise<Response> = () => new Promise(() => {});
-	private asked: string | undefined;
+	private readonly paths: string[] = [];
 
-	answerAlbum() {
-		this.answer = async () => okReply({ album });
-	}
-
-	show(reference: string) {
-		const fetch = async (request: Request) => {
-			const call = await request.json();
-			this.asked = call.body.reference;
-			return this.answer();
+	show() {
+		const fetch = (request: Request) => {
+			this.paths.push(new URL(request.url).pathname);
+			return new Promise<Response>(() => {});
 		};
 		render(
 			<FreshSession>
 				<ApiProvider baseUrl="http://localhost" fetch={fetch}>
-					<MemoryRouter initialEntries={[`/confeccion/${reference}`]}>
-						<Routes>
-							<Route path="/confeccion/:reference" element={<MakingPage />} />
-						</Routes>
+					<MemoryRouter initialEntries={["/confeccion"]}>
+						<UserAlbumContext.Provider value={{ userAlbum, adopt: () => {} }}>
+							<MakingPage />
+						</UserAlbumContext.Provider>
 					</MemoryRouter>
 				</ApiProvider>
 			</FreshSession>,
@@ -86,11 +78,15 @@ class SUT {
 	}
 
 	heading(name: string) {
-		return screen.findByRole("heading", { name });
+		return screen.getByRole("heading", { name });
 	}
 
-	page() {
-		return screen.findByRole("main", { name: "Confección" });
+	face() {
+		return screen.getByRole("img", { name: "Cara 1" });
+	}
+
+	position() {
+		return screen.getByRole("status", { name: "Posición" });
 	}
 
 	photoTray() {
@@ -101,14 +97,7 @@ class SUT {
 		return screen.queryAllByRole("link");
 	}
 
-	referenceAsked() {
-		return this.asked;
+	pathsAsked() {
+		return this.paths;
 	}
-}
-
-function okReply(body: unknown) {
-	return new Response(
-		JSON.stringify({ header: { callId: "c", status: "ok" }, body }),
-		{ headers: { "content-type": "application/json" } },
-	);
 }

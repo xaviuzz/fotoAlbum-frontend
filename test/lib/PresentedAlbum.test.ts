@@ -54,4 +54,10 @@ describe("PresentedAlbum", () => {
 		expect(presented.albumSizeLabel()).toBe("150 × 210 mm");
 		expect(presented.pageSizeLabel()).toBe("140 × 200 mm");
 	});
+
+	test("gives the page size as the proportion of a face", () => {
+		const presented = new PresentedAlbum(portraitAlbum);
+
+		expect(presented.pageProportion()).toBe("140 / 200");
+	});
 });

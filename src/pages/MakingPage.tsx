@@ -1,30 +1,20 @@
-import { useEffect, useState } from "react";
-import { useParams } from "react-router";
-import { useAlbums } from "@/api/ApiContext";
-import {
-	AlbumMaking,
-	type AlbumMakingReading,
-} from "@/components/making/AlbumMaking";
+import { FaceViewer } from "@/components/making/FaceViewer";
+import { MakingHeader } from "@/components/making/MakingHeader";
 import { PhotoTray } from "@/components/making/PhotoTray";
+import { useCurrentUserAlbum } from "@/userAlbum/UserAlbumContext";
 
 export function MakingPage() {
-	const { reference = "" } = useParams();
-	const albums = useAlbums();
-	const [reading, setReading] = useState<AlbumMakingReading>("loading");
+	const { userAlbum } = useCurrentUserAlbum();
 
-	useEffect(() => {
-		let isCurrent = true;
-		setReading("loading");
-		albums.get(reference).then((answer) => {
-			if (isCurrent) {
-				setReading(answer);
-			}
-		});
-		return () => {
-			isCurrent = false;
-		};
-	}, [albums, reference]);
-
+	let album = null;
+	if (userAlbum !== null) {
+		album = (
+			<>
+				<MakingHeader album={userAlbum} />
+				<FaceViewer album={userAlbum} />
+			</>
+		);
+	}
 	return (
 		<main
 			aria-label="Confección"
@@ -33,9 +23,7 @@ export function MakingPage() {
 			<div className="w-1/4 min-w-0">
 				<PhotoTray />
 			</div>
-			<div className="flex min-w-0 flex-1 flex-col gap-4">
-				<AlbumMaking reading={reading} />
-			</div>
+			<div className="flex min-w-0 flex-1 flex-col gap-4">{album}</div>
 		</main>
 	);
 }
