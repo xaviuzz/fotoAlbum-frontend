@@ -55,12 +55,70 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/photo.list": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Lists the photos of the session, oldest first */
+        post: operations["photoList"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/photo.upload": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Stores the photos of the session and makes their thumbnails
+         * @description The one operation that is not JSON. Rejected files do not stop the others.
+         */
+        post: operations["photoUpload"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/photos/{sessionId}/{photoId}/thumbnail": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Serves the thumbnail of a photo
+         * @description The single exception to the RPC style, because an img element can only GET.
+         */
+        get: operations["photoThumbnail"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
         CallHeader: {
             callId: string;
+            sessionId?: string;
         };
         HealthCheckCall: {
             header: components["schemas"]["CallHeader"];
@@ -73,7 +131,7 @@ export interface components {
         };
         ErrorBody: {
             /** @enum {string} */
-            code: "INVALID_BODY" | "ALBUM_NOT_FOUND" | "INTERNAL_ERROR";
+            code: "INVALID_BODY" | "ALBUM_NOT_FOUND" | "SESSION_REQUIRED" | "INTERNAL_ERROR";
             message: string;
         };
         HealthCheckReply: {
@@ -118,6 +176,38 @@ export interface components {
             header: components["schemas"]["ReplyHeader"];
             body: {
                 album: components["schemas"]["Album"];
+            } | components["schemas"]["ErrorBody"];
+        };
+        Photo: {
+            id: string;
+            thumbnailUrl: string;
+        };
+        /** @enum {string} */
+        RejectionCode: "UNSUPPORTED_FORMAT" | "TOO_LARGE" | "UNREADABLE_IMAGE";
+        RejectedFile: {
+            name: string;
+            code: components["schemas"]["RejectionCode"];
+        };
+        PhotoListCall: {
+            header: components["schemas"]["CallHeader"];
+            body?: Record<string, never>;
+        };
+        PhotoListReply: {
+            header: components["schemas"]["ReplyHeader"];
+            body: {
+                photos: components["schemas"]["Photo"][];
+            } | components["schemas"]["ErrorBody"];
+        };
+        PhotoUploadCall: {
+            callId: string;
+            sessionId: string;
+            files: string[];
+        };
+        PhotoUploadReply: {
+            header: components["schemas"]["ReplyHeader"];
+            body: {
+                photos: components["schemas"]["Photo"][];
+                rejected: components["schemas"]["RejectedFile"][];
             } | components["schemas"]["ErrorBody"];
         };
         TransportError: components["schemas"]["ErrorBody"];
@@ -226,6 +316,104 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["TransportError"];
                 };
+            };
+        };
+    };
+    photoList: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PhotoListCall"];
+            };
+        };
+        responses: {
+            /** @description ok, or an error carried in the message */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PhotoListReply"];
+                };
+            };
+            /** @description unreadable JSON or missing callId */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TransportError"];
+                };
+            };
+        };
+    };
+    photoUpload: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["PhotoUploadCall"];
+            };
+        };
+        responses: {
+            /** @description ok, or an error carried in the message */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PhotoUploadReply"];
+                };
+            };
+            /** @description unreadable form or missing callId */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TransportError"];
+                };
+            };
+        };
+    };
+    photoThumbnail: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                sessionId: string;
+                photoId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description the thumbnail, always JPEG */
+            200: {
+                headers: {
+                    /** @description public, immutable */
+                    "Cache-Control"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "image/jpeg": string;
+                };
+            };
+            /** @description unknown photo */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
