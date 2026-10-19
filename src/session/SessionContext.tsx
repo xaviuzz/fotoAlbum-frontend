@@ -16,7 +16,11 @@ export function SessionProvider({
 	store: SessionStore;
 	children: ReactNode;
 }) {
-	const [session, setSession] = useState(() => store.load());
+	const [session, setSession] = useState(() => {
+		const loaded = store.load();
+		store.save(loaded);
+		return loaded;
+	});
 
 	const keep = (next: Session) => {
 		store.save(next);

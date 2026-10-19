@@ -33,6 +33,13 @@ describe("SessionProvider", () => {
 		expect(sut.identity()).toHaveTextContent(stored.callHeader("c").sessionId);
 	});
 
+	test("stores the session it starts with when none was stored", () => {
+		sut.show();
+
+		const shown = sut.identity().textContent;
+		expect(sut.stored().callHeader("c").sessionId).toBe(shown);
+	});
+
 	test("takes a new identity when starting over and stores it", () => {
 		const stored = Session.start();
 		sut.store(stored);
