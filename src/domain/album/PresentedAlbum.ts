@@ -1,4 +1,7 @@
 import type { Album } from "@/api/endpoints/Albums";
+import type { components } from "@/api/schema";
+
+type Slot = components["schemas"]["Slot"];
 
 const bindingLabels: Record<Album["binding"], string> = {
 	hardcover: "Tapa dura",
@@ -13,9 +16,11 @@ const orientationLabels: Record<Album["orientation"], string> = {
 
 export class PresentedAlbum {
 	private readonly album: Album;
+	private readonly slots: Slot[];
 
-	constructor(album: Album) {
+	constructor(album: Album, slots: Slot[] = []) {
 		this.album = album;
+		this.slots = slots;
 	}
 
 	get reference() {
@@ -49,6 +54,19 @@ export class PresentedAlbum {
 	pageProportion() {
 		const { width, height } = this.album.pageSize;
 		return `${width} / ${height}`;
+	}
+
+	photoIdOf(face: number) {
+		const slot = this.slots.find((candidate) => candidate.face === face);
+		let photoId = null;
+		if (slot) {
+			photoId = slot.photoId;
+		}
+		return photoId;
+	}
+
+	hasPlaced(photoId: string) {
+		return this.slots.some((slot) => slot.photoId === photoId);
 	}
 
 	private sizeLabel(size: Album["albumSize"]) {

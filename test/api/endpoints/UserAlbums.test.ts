@@ -15,6 +15,7 @@ const userAlbum = {
 	pageCount: 24,
 	binding: "hardcover" as const,
 	orientation: "square" as const,
+	slots: [{ face: 1, photoId: "photo-1" }],
 };
 
 describe("UserAlbums get", () => {
@@ -31,7 +32,7 @@ describe("UserAlbums get", () => {
 
 		expect(sut.result()).toEqual({
 			status: "ok",
-			userAlbum: new PresentedAlbum(userAlbum),
+			userAlbum: new PresentedAlbum(userAlbum, userAlbum.slots),
 		});
 	});
 
@@ -80,7 +81,7 @@ describe("UserAlbums create", () => {
 
 		expect(sut.result()).toEqual({
 			status: "ok",
-			userAlbum: new PresentedAlbum(userAlbum),
+			userAlbum: new PresentedAlbum(userAlbum, userAlbum.slots),
 		});
 	});
 
