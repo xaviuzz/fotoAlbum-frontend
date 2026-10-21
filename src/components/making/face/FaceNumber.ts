@@ -1,8 +1,14 @@
+import type { PresentedAlbum } from "@/domain/album/PresentedAlbum";
+
 export type BindingSide = "left" | "right";
 
 export class FaceNumber {
 	private readonly number: number;
 	private readonly pageCount: number;
+
+	get value() {
+		return this.number;
+	}
 
 	private constructor(number: number, pageCount: number) {
 		this.number = number;
@@ -49,7 +55,19 @@ export class FaceNumber {
 		return `${this.number}/${this.pageCount}`;
 	}
 
+	occupantIn(album: PresentedAlbum) {
+		return album.photoIdOf(this.number);
+	}
+
 	describe() {
 		return `Cara ${this.number}`;
+	}
+
+	describeSlot() {
+		return `Hueco de la cara ${this.number}`;
+	}
+
+	describePhoto() {
+		return `Foto de la cara ${this.number}`;
 	}
 }

@@ -1,8 +1,12 @@
 import { beforeEach, describe, expect, test } from "bun:test";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { ApiProvider } from "@/api/ApiContext";
 import { FaceViewer } from "@/components/making/face/FaceViewer";
+import { PhotosProvider } from "@/contexts/PhotosContext";
 import { PresentedAlbum } from "@/domain/album/PresentedAlbum";
+import { AdoptingUserAlbum } from "../../../support/AdoptingUserAlbum";
+import { FreshSession } from "../../../support/FreshSession";
 
 const portraitAlbum = new PresentedAlbum({
 	reference: "PT-150",
@@ -80,7 +84,20 @@ describe("FaceViewer", () => {
 
 class SUT {
 	show(album: PresentedAlbum) {
-		render(<FaceViewer album={album} />);
+		render(
+			<FreshSession>
+				<ApiProvider
+					baseUrl="http://localhost"
+					fetch={() => new Promise<Response>(() => {})}
+				>
+					<AdoptingUserAlbum initial={album}>
+						<PhotosProvider>
+							<FaceViewer album={album} />
+						</PhotosProvider>
+					</AdoptingUserAlbum>
+				</ApiProvider>
+			</FreshSession>,
+		);
 	}
 
 	face() {

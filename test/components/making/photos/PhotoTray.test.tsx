@@ -3,11 +3,24 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { ApiProvider } from "@/api/ApiContext";
 import { PhotoTray } from "@/components/making/photos/PhotoTray";
+import { PhotosProvider } from "@/contexts/PhotosContext";
+import { UserAlbumContext } from "@/contexts/UserAlbumContext";
+import { PresentedAlbum } from "@/domain/album/PresentedAlbum";
 import { FreshSession } from "../../../support/FreshSession";
 
 const firstPhoto = { id: "p1", thumbnailUrl: "/photos/s/p1/thumbnail" };
 const secondPhoto = { id: "p2", thumbnailUrl: "/photos/s/p2/thumbnail" };
 const thirdPhoto = { id: "p3", thumbnailUrl: "/photos/s/p3/thumbnail" };
+
+const album = {
+	reference: "PT-150",
+	commercialName: "Retrato de bolsillo",
+	albumSize: { width: 150, height: 210 },
+	pageSize: { width: 140, height: 200 },
+	pageCount: 3,
+	binding: "softcover" as const,
+	orientation: "portrait" as const,
+};
 
 describe("PhotoTray", () => {
 	let sut: SUT;
@@ -36,6 +49,15 @@ describe("PhotoTray", () => {
 		sut.show();
 
 		expect(await sut.emptyMessage()).toBeInTheDocument();
+	});
+
+	test("lists only the photos that occupy no slot, in upload order", async () => {
+		sut.answerList({ photos: [firstPhoto, secondPhoto, thirdPhoto] });
+
+		sut.show(new PresentedAlbum(album, [{ face: 1, photoId: "p2" }]));
+
+		const sources = await sut.thumbnailSourcesOnceThereAre(2);
+		expect(sources).toEqual([firstPhoto.thumbnailUrl, thirdPhoto.thumbnailUrl]);
 	});
 
 	test("shows an error message when the list fails", async () => {
@@ -110,7 +132,7 @@ class SUT {
 	private list: Pending = () => new Promise(() => {});
 	private uploadReply: Pending = () => new Promise(() => {});
 
-	show() {
+	show(userAlbum: PresentedAlbum = new PresentedAlbum(album, [])) {
 		const fetch = async (request: Request) => {
 			const isUpload = new URL(request.url).pathname === "/photo.upload";
 			let reply = this.list;
@@ -122,7 +144,11 @@ class SUT {
 		render(
 			<FreshSession>
 				<ApiProvider baseUrl="http://localhost" fetch={fetch}>
-					<PhotoTray />
+					<UserAlbumContext.Provider value={{ userAlbum, adopt: () => {} }}>
+						<PhotosProvider>
+							<PhotoTray />
+						</PhotosProvider>
+					</UserAlbumContext.Provider>
 				</ApiProvider>
 			</FreshSession>,
 		);

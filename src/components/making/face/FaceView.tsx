@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import type { FaceNumber } from "@/components/making/face/FaceNumber";
 
 const bindingStrips = {
@@ -8,9 +9,11 @@ const bindingStrips = {
 export function FaceView({
 	face,
 	proportion,
+	children,
 }: {
 	face: FaceNumber;
 	proportion: string;
+	children?: ReactNode;
 }) {
 	const side = face.bindingSide();
 	const faceStyle = {
@@ -31,6 +34,7 @@ export function FaceView({
 					aria-hidden="true"
 					className={`absolute inset-y-0 w-[6%] from-foreground/15 to-transparent ${bindingStrips[side]}`}
 				/>
+				{children}
 			</div>
 		</div>
 	);

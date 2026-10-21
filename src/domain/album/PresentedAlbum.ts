@@ -1,5 +1,7 @@
 import type { Album } from "@/api/endpoints/Albums";
+import type { Photo } from "@/api/endpoints/Photos";
 import type { components } from "@/api/schema";
+import { SlotGeometry } from "@/domain/album/SlotGeometry";
 
 type Slot = components["schemas"]["Slot"];
 
@@ -56,6 +58,10 @@ export class PresentedAlbum {
 		return `${width} / ${height}`;
 	}
 
+	slotGeometry() {
+		return SlotGeometry.of(this.album.pageSize);
+	}
+
 	photoIdOf(face: number) {
 		const slot = this.slots.find((candidate) => candidate.face === face);
 		let photoId = null;
@@ -67,6 +73,16 @@ export class PresentedAlbum {
 
 	hasPlaced(photoId: string) {
 		return this.slots.some((slot) => slot.photoId === photoId);
+	}
+
+	unplaced(photos: Photo[]) {
+		const unplaced = [];
+		for (const photo of photos) {
+			if (!this.hasPlaced(photo.id)) {
+				unplaced.push(photo);
+			}
+		}
+		return unplaced;
 	}
 
 	private sizeLabel(size: Album["albumSize"]) {

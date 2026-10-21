@@ -1,4 +1,5 @@
 import type { Photo } from "@/api/endpoints/Photos";
+import { startPhotoDrag } from "@/components/making/dragging";
 
 export function PhotoThumbnails({ photos }: { photos: Photo[] }) {
 	const items = [];
@@ -8,6 +9,7 @@ export function PhotoThumbnails({ photos }: { photos: Photo[] }) {
 				<img
 					src={photo.thumbnailUrl}
 					alt={`Foto ${index + 1}`}
+					onDragStart={(event) => startPhotoDrag(event, photo.id)}
 					className="w-full rounded-md"
 				/>
 			</li>,
