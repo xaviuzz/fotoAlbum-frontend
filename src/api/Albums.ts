@@ -1,72 +1,41 @@
-import type { Client } from "openapi-fetch";
-import type { components, paths } from "@/api/schema";
+import type { ApiAnswer } from "@/api/ApiAnswer";
+import type { CallSender } from "@/api/CallSender";
+import type { components } from "@/api/schema";
 import { PresentedAlbum } from "@/lib/PresentedAlbum";
-import type { Session } from "@/lib/Session";
 
 export type Album = components["schemas"]["Album"];
-export type AlbumErrorCode = components["schemas"]["ErrorBody"]["code"];
 
-export type AlbumsAnswer =
-	| { status: "ok"; albums: PresentedAlbum[] }
-	| { status: "error"; code: AlbumErrorCode };
+export type AlbumsAnswer = ApiAnswer<{ albums: PresentedAlbum[] }>;
 
-export type AlbumAnswer =
-	| { status: "ok"; album: PresentedAlbum }
-	| { status: "error"; code: AlbumErrorCode };
+export type AlbumAnswer = ApiAnswer<{ album: PresentedAlbum }>;
 
 export class Albums {
-	readonly #client: Client<paths>;
-	readonly #session: Session;
+	private readonly sender: CallSender;
 
-	constructor(client: Client<paths>, session: Session) {
-		this.#client = client;
-		this.#session = session;
+	constructor(sender: CallSender) {
+		this.sender = sender;
 	}
 
-	async list(): Promise<AlbumsAnswer> {
-		let answer: AlbumsAnswer = { status: "error", code: "INTERNAL_ERROR" };
-		try {
-			const callId = crypto.randomUUID();
-			const reply = await this.#client.POST("/album.list", {
-				body: { header: this.#session.callHeader(callId) },
-			});
-			const body = reply.data?.body;
-			if (body && "albums" in body) {
-				const albums = [];
-				for (const album of body.albums) {
-					albums.push(new PresentedAlbum(album));
-				}
-				answer = { status: "ok", albums };
-			}
-			if (body && "code" in body) {
-				answer = { status: "error", code: body.code };
-			}
-		} catch {
-			answer = { status: "error", code: "INTERNAL_ERROR" };
-		}
-		return answer;
+	list(): Promise<AlbumsAnswer> {
+		return this.sender.send(
+			(client, header) => client.POST("/album.list", { body: { header } }),
+			(body) => ({ albums: this.presented(body.albums) }),
+		);
 	}
 
-	async get(reference: string): Promise<AlbumAnswer> {
-		let answer: AlbumAnswer = { status: "error", code: "INTERNAL_ERROR" };
-		try {
-			const callId = crypto.randomUUID();
-			const reply = await this.#client.POST("/album.get", {
-				body: {
-					header: this.#session.callHeader(callId),
-					body: { reference },
-				},
-			});
-			const body = reply.data?.body;
-			if (body && "album" in body) {
-				answer = { status: "ok", album: new PresentedAlbum(body.album) };
-			}
-			if (body && "code" in body) {
-				answer = { status: "error", code: body.code };
-			}
-		} catch {
-			answer = { status: "error", code: "INTERNAL_ERROR" };
+	get(reference: string): Promise<AlbumAnswer> {
+		return this.sender.send(
+			(client, header) =>
+				client.POST("/album.get", { body: { header, body: { reference } } }),
+			(body) => ({ album: new PresentedAlbum(body.album) }),
+		);
+	}
+
+	private presented(albums: Album[]): PresentedAlbum[] {
+		const presented = [];
+		for (const album of albums) {
+			presented.push(new PresentedAlbum(album));
 		}
-		return answer;
+		return presented;
 	}
 }

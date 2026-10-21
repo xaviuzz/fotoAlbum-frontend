@@ -5,20 +5,20 @@ import type { Session } from "@/lib/Session";
 export type Health = "ok" | "error";
 
 export class HealthCheck {
-	readonly #client: Client<paths>;
-	readonly #session: Session;
+	private readonly client: Client<paths>;
+	private readonly session: Session;
 
 	constructor(client: Client<paths>, session: Session) {
-		this.#client = client;
-		this.#session = session;
+		this.client = client;
+		this.session = session;
 	}
 
 	async run(): Promise<Health> {
 		let health: Health = "error";
 		try {
 			const callId = crypto.randomUUID();
-			const answer = await this.#client.POST("/health.check", {
-				body: { header: this.#session.callHeader(callId) },
+			const answer = await this.client.POST("/health.check", {
+				body: { header: this.session.callHeader(callId) },
 			});
 			if (answer.data?.header.status === "ok") {
 				health = "ok";

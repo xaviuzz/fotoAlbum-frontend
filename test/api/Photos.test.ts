@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, test } from "bun:test";
 import createClient from "openapi-fetch";
+import { CallSender } from "@/api/CallSender";
 import { Photos } from "@/api/Photos";
 import type { paths } from "@/api/schema";
 import { Session } from "@/lib/Session";
@@ -182,8 +183,7 @@ class SUT {
 			},
 		});
 		this.photos = new Photos(
-			client,
-			Session.restore('{"identity":"session-1"}'),
+			new CallSender(client, Session.restore('{"identity":"session-1"}')),
 		);
 	}
 

@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, test } from "bun:test";
 import createClient from "openapi-fetch";
 import { type Album, Albums } from "@/api/Albums";
+import { CallSender } from "@/api/CallSender";
 import type { paths } from "@/api/schema";
 import { PresentedAlbum } from "@/lib/PresentedAlbum";
 import { Session } from "@/lib/Session";
@@ -151,8 +152,7 @@ class SUT {
 			},
 		});
 		this.albums = new Albums(
-			client,
-			Session.restore('{"identity":"session-1"}'),
+			new CallSender(client, Session.restore('{"identity":"session-1"}')),
 		);
 	}
 

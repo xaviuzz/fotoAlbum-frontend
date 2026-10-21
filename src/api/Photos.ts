@@ -1,72 +1,49 @@
-import type { Client } from "openapi-fetch";
-import type { components, paths } from "@/api/schema";
-import type { Session } from "@/lib/Session";
+import type { ApiAnswer } from "@/api/ApiAnswer";
+import type { CallSender } from "@/api/CallSender";
+import type { components } from "@/api/schema";
 
 export type Photo = components["schemas"]["Photo"];
 export type RejectedFile = components["schemas"]["RejectedFile"];
-export type PhotoErrorCode = components["schemas"]["ErrorBody"]["code"];
 
-export type PhotosAnswer =
-	| { status: "ok"; photos: Photo[] }
-	| { status: "error"; code: PhotoErrorCode };
+export type PhotosAnswer = ApiAnswer<{ photos: Photo[] }>;
 
-export type UploadAnswer =
-	| { status: "ok"; photos: Photo[]; rejected: RejectedFile[] }
-	| { status: "error"; code: PhotoErrorCode };
+export type UploadAnswer = ApiAnswer<{
+	photos: Photo[];
+	rejected: RejectedFile[];
+}>;
 
 export class Photos {
-	readonly #client: Client<paths>;
-	readonly #session: Session;
+	private readonly sender: CallSender;
 
-	constructor(client: Client<paths>, session: Session) {
-		this.#client = client;
-		this.#session = session;
+	constructor(sender: CallSender) {
+		this.sender = sender;
 	}
 
-	async list(): Promise<PhotosAnswer> {
-		let answer: PhotosAnswer = { status: "error", code: "INTERNAL_ERROR" };
-		try {
-			const callId = crypto.randomUUID();
-			const reply = await this.#client.POST("/photo.list", {
-				body: { header: this.#session.callHeader(callId) },
-			});
-			const body = reply.data?.body;
-			if (body && "photos" in body) {
-				answer = { status: "ok", photos: body.photos };
-			}
-			if (body && "code" in body) {
-				answer = { status: "error", code: body.code };
-			}
-		} catch {
-			answer = { status: "error", code: "INTERNAL_ERROR" };
-		}
-		return answer;
+	list(): Promise<PhotosAnswer> {
+		return this.sender.send(
+			(client, header) => client.POST("/photo.list", { body: { header } }),
+			(body) => ({ photos: body.photos }),
+		);
 	}
 
-	async upload(files: File[]): Promise<UploadAnswer> {
-		let answer: UploadAnswer = { status: "error", code: "INTERNAL_ERROR" };
-		try {
-			const header = this.#session.callHeader(crypto.randomUUID());
-			const form = new FormData();
-			form.append("callId", header.callId);
-			form.append("sessionId", header.sessionId);
-			for (const file of files) {
-				form.append("files", file);
-			}
-			const reply = await this.#client.POST("/photo.upload", {
-				body: { ...header, files: [] },
-				bodySerializer: () => form,
-			});
-			const body = reply.data?.body;
-			if (body && "photos" in body) {
-				answer = { status: "ok", photos: body.photos, rejected: body.rejected };
-			}
-			if (body && "code" in body) {
-				answer = { status: "error", code: body.code };
-			}
-		} catch {
-			answer = { status: "error", code: "INTERNAL_ERROR" };
+	upload(files: File[]): Promise<UploadAnswer> {
+		return this.sender.send(
+			(client, header) =>
+				client.POST("/photo.upload", {
+					body: { ...header, files: [] },
+					bodySerializer: () => this.formOf(header, files),
+				}),
+			(body) => ({ photos: body.photos, rejected: body.rejected }),
+		);
+	}
+
+	private formOf(header: { callId: string; sessionId: string }, files: File[]) {
+		const form = new FormData();
+		form.append("callId", header.callId);
+		form.append("sessionId", header.sessionId);
+		for (const file of files) {
+			form.append("files", file);
 		}
-		return answer;
+		return form;
 	}
 }

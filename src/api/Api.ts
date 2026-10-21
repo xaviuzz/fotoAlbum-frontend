@@ -1,5 +1,6 @@
 import type { Client } from "openapi-fetch";
 import { Albums } from "@/api/Albums";
+import { CallSender } from "@/api/CallSender";
 import { HealthCheck } from "@/api/HealthCheck";
 import { Photos } from "@/api/Photos";
 import type { paths } from "@/api/schema";
@@ -13,9 +14,10 @@ export class Api {
 	readonly userAlbums: UserAlbums;
 
 	constructor(client: Client<paths>, session: Session) {
+		const sender = new CallSender(client, session);
 		this.healthCheck = new HealthCheck(client, session);
-		this.albums = new Albums(client, session);
-		this.photos = new Photos(client, session);
-		this.userAlbums = new UserAlbums(client, session);
+		this.albums = new Albums(sender);
+		this.photos = new Photos(sender);
+		this.userAlbums = new UserAlbums(sender);
 	}
 }
