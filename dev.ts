@@ -22,6 +22,8 @@ Bun.serve({
 		"/userAlbum.get": proxyTo("/userAlbum.get"),
 		"/photo.list": proxyTo("/photo.list"),
 		"/photo.upload": proxyTo("/photo.upload"),
+		"/slot.place": proxyTo("/slot.place"),
+		"/slot.empty": proxyTo("/slot.empty"),
 		"/photos/*": proxyKeepingPath,
 	},
 	development: true,

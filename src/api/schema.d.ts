@@ -126,6 +126,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/slot.place": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Places a photo of the session in the slot of a face, replacing the previous one */
+        post: operations["slotPlace"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/slot.empty": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Empties the slot of a face */
+        post: operations["slotEmpty"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/photos/{sessionId}/{photoId}/thumbnail": {
         parameters: {
             query?: never;
@@ -165,7 +199,7 @@ export interface components {
         };
         ErrorBody: {
             /** @enum {string} */
-            code: "INVALID_BODY" | "ALBUM_NOT_FOUND" | "SESSION_REQUIRED" | "USER_ALBUM_ALREADY_EXISTS" | "USER_ALBUM_NOT_FOUND" | "INTERNAL_ERROR";
+            code: "INVALID_BODY" | "ALBUM_NOT_FOUND" | "SESSION_REQUIRED" | "USER_ALBUM_ALREADY_EXISTS" | "USER_ALBUM_NOT_FOUND" | "FACE_NOT_FOUND" | "PHOTO_NOT_FOUND" | "INTERNAL_ERROR";
             message: string;
         };
         HealthCheckReply: {
@@ -212,7 +246,12 @@ export interface components {
                 album: components["schemas"]["Album"];
             } | components["schemas"]["ErrorBody"];
         };
+        Slot: {
+            face: number;
+            photoId: string | null;
+        };
         UserAlbum: {
+            slots: components["schemas"]["Slot"][];
             id: string;
             reference: string;
             commercialName: string;
@@ -241,6 +280,31 @@ export interface components {
             body?: Record<string, never>;
         };
         UserAlbumGetReply: {
+            header: components["schemas"]["ReplyHeader"];
+            body: {
+                userAlbum: components["schemas"]["UserAlbum"];
+            } | components["schemas"]["ErrorBody"];
+        };
+        SlotPlaceCall: {
+            header: components["schemas"]["CallHeader"];
+            body: {
+                face: number;
+                photoId: string;
+            };
+        };
+        SlotPlaceReply: {
+            header: components["schemas"]["ReplyHeader"];
+            body: {
+                userAlbum: components["schemas"]["UserAlbum"];
+            } | components["schemas"]["ErrorBody"];
+        };
+        SlotEmptyCall: {
+            header: components["schemas"]["CallHeader"];
+            body: {
+                face: number;
+            };
+        };
+        SlotEmptyReply: {
             header: components["schemas"]["ReplyHeader"];
             body: {
                 userAlbum: components["schemas"]["UserAlbum"];
@@ -509,6 +573,72 @@ export interface operations {
                 };
             };
             /** @description unreadable form or missing callId */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TransportError"];
+                };
+            };
+        };
+    };
+    slotPlace: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SlotPlaceCall"];
+            };
+        };
+        responses: {
+            /** @description ok, or an error carried in the message */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SlotPlaceReply"];
+                };
+            };
+            /** @description unreadable JSON or missing callId */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TransportError"];
+                };
+            };
+        };
+    };
+    slotEmpty: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SlotEmptyCall"];
+            };
+        };
+        responses: {
+            /** @description ok, or an error carried in the message */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SlotEmptyReply"];
+                };
+            };
+            /** @description unreadable JSON or missing callId */
             400: {
                 headers: {
                     [name: string]: unknown;
