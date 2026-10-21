@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { MemoryRouter } from "react-router";
 import { ApiProvider } from "@/api/ApiContext";
-import { UserAlbumContext } from "@/userAlbum/UserAlbumContext";
+import { UserAlbumContext } from "@/contexts/UserAlbumContext";
 import { FreshSession } from "./FreshSession";
 
 const neverAnswers = () => new Promise<Response>(() => {});

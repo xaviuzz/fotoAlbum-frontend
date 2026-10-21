@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
+import { SessionProvider } from "@/contexts/SessionContext";
 import { SessionStore } from "@/lib/SessionStore";
-import { SessionProvider } from "@/session/SessionContext";
 import { FakeStorage } from "./FakeStorage";
 
 export function FreshSession({ children }: { children: ReactNode }) {

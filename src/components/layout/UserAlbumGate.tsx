@@ -3,8 +3,8 @@ import { Navigate, useLocation } from "react-router";
 import { useUserAlbums } from "@/api/ApiContext";
 import type { UserAlbumAnswer } from "@/api/endpoints/UserAlbums";
 import { Alert, AlertTitle } from "@/components/ui/alert";
+import { UserAlbumContext } from "@/contexts/UserAlbumContext";
 import type { PresentedAlbum } from "@/lib/PresentedAlbum";
-import { UserAlbumContext } from "@/userAlbum/UserAlbumContext";
 
 type UserAlbumReading = "loading" | UserAlbumAnswer;
 

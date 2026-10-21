@@ -2,7 +2,7 @@ import createClient, { type ClientOptions } from "openapi-fetch";
 import { createContext, type ReactNode, useContext, useMemo } from "react";
 import { Api } from "@/api/Api";
 import type { paths } from "@/api/schema";
-import { useSession } from "@/session/SessionContext";
+import { useSession } from "@/contexts/SessionContext";
 
 const ApiContext = createContext<Api | null>(null);
 

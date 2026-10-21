@@ -2,9 +2,9 @@ import { beforeEach, describe, expect, test } from "bun:test";
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 import { ApiProvider } from "@/api/ApiContext";
+import { UserAlbumContext } from "@/contexts/UserAlbumContext";
 import { PresentedAlbum } from "@/lib/PresentedAlbum";
 import { MakingPage } from "@/pages/MakingPage";
-import { UserAlbumContext } from "@/userAlbum/UserAlbumContext";
 import { FreshSession } from "../support/FreshSession";
 
 const userAlbum = new PresentedAlbum({

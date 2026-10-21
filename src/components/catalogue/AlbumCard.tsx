@@ -2,8 +2,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router";
 import { useUserAlbums } from "@/api/ApiContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useCurrentUserAlbum } from "@/contexts/UserAlbumContext";
 import type { PresentedAlbum } from "@/lib/PresentedAlbum";
-import { useCurrentUserAlbum } from "@/userAlbum/UserAlbumContext";
 
 export function AlbumCard({
 	album,

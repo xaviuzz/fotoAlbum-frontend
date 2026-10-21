@@ -4,9 +4,9 @@ import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router";
 import { App } from "@/App";
 import { ApiProvider } from "@/api/ApiContext";
+import { SessionProvider } from "@/contexts/SessionContext";
 import { Session } from "@/lib/Session";
 import { SessionStore } from "@/lib/SessionStore";
-import { SessionProvider } from "@/session/SessionContext";
 import { FakeStorage } from "./support/FakeStorage";
 
 const userAlbum = {

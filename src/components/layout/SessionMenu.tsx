@@ -19,7 +19,7 @@ import {
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useSession } from "@/session/SessionContext";
+import { useSession } from "@/contexts/SessionContext";
 
 export function SessionMenu() {
 	const { session, restart } = useSession();

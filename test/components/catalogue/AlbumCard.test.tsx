@@ -4,8 +4,8 @@ import userEvent from "@testing-library/user-event";
 import { MemoryRouter, useLocation } from "react-router";
 import { ApiProvider } from "@/api/ApiContext";
 import { AlbumCard } from "@/components/catalogue/AlbumCard";
+import { UserAlbumContext } from "@/contexts/UserAlbumContext";
 import { PresentedAlbum } from "@/lib/PresentedAlbum";
-import { UserAlbumContext } from "@/userAlbum/UserAlbumContext";
 import { FreshSession } from "../../support/FreshSession";
 
 const portraitUserAlbum = {

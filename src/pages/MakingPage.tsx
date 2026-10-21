@@ -1,7 +1,7 @@
 import { FaceViewer } from "@/components/making/FaceViewer";
 import { MakingHeader } from "@/components/making/MakingHeader";
 import { PhotoTray } from "@/components/making/PhotoTray";
-import { useCurrentUserAlbum } from "@/userAlbum/UserAlbumContext";
+import { useCurrentUserAlbum } from "@/contexts/UserAlbumContext";
 
 export function MakingPage() {
 	const { userAlbum } = useCurrentUserAlbum();
