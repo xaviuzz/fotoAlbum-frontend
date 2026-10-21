@@ -34,7 +34,7 @@ A test that asserts before a component's mount fetch settles leaves a pending up
 
 After `shadcn add`, search `src/components/ui/` for `from "cn"`: the generator writes that import and adds a `cn` dependency. Point the import at `@/lib/utils`, drop `cn` from `package.json` and run `bun install` so `bun.lock` drops it too.
 
-`src/components/` groups one component per file by feature: `layout/`, `catalogue/`, `making/`; `ui/` is shadcn. What is not a component (labels, helpers) lives in `src/lib/`. Decision and why: umbrella `.claude/decisions.md`, "Components grouped by feature".
+`src/components/` groups one component per file by feature: `layout/`, `catalogue/`, `making/`; `ui/` is shadcn. A helper used by one component sits beside it. Types shared across the app live in `src/domain/` (`album/`, `session/`); `src/lib/` keeps `useReading` and shadcn's `utils`. Decisions and why: umbrella `.claude/decisions.md`, "Components grouped by feature" and "Domain folder and colocated helpers".
 
 A step that removes a method lists what else that method did (saving, navigating, notifying) and keeps a test for each effect that must survive.
 
