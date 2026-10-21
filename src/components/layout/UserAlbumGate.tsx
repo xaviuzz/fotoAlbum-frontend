@@ -2,7 +2,8 @@ import type { ReactNode } from "react";
 import { Navigate, useLocation } from "react-router";
 import { useUserAlbums } from "@/api/ApiContext";
 import type { UserAlbums } from "@/api/endpoints/UserAlbums";
-import { Alert, AlertTitle } from "@/components/ui/alert";
+import { FailureNotice } from "@/components/FailureNotice";
+import { LoadingNotice } from "@/components/LoadingNotice";
 import { UserAlbumContext } from "@/contexts/UserAlbumContext";
 import type { PresentedAlbum } from "@/domain/album/PresentedAlbum";
 import { useReading } from "@/lib/useReading";
@@ -17,24 +18,12 @@ export function UserAlbumGate({ children }: { children: ReactNode }) {
 	const adopt = (userAlbum: PresentedAlbum) =>
 		setReading({ status: "ok", userAlbum });
 
-	let content = (
-		<Alert variant="destructive">
-			<AlertTitle>No se pudo cargar el álbum</AlertTitle>
-		</Alert>
-	);
+	let content = <FailureNotice message="No se pudo cargar el álbum" />;
 	let userAlbum: PresentedAlbum | null = null;
 	let belongsAt = "/";
 	let isAnswered = false;
 	if (reading === "loading") {
-		content = (
-			<p
-				role="status"
-				aria-label="Cargando álbum"
-				className="text-muted-foreground"
-			>
-				Cargando…
-			</p>
-		);
+		content = <LoadingNotice label="Cargando álbum" />;
 	} else if (reading.status === "ok") {
 		userAlbum = reading.userAlbum;
 		belongsAt = "/confeccion";

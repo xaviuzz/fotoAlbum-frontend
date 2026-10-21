@@ -6,14 +6,21 @@ import type {
 	PhotosAnswer,
 	RejectedFile,
 } from "@/api/endpoints/Photos";
+import { EmptyNotice } from "@/components/EmptyNotice";
+import { FailureNotice } from "@/components/FailureNotice";
+import { LoadingNotice } from "@/components/LoadingNotice";
 import { PhotoThumbnails } from "@/components/making/PhotoThumbnails";
 import { RejectedFiles } from "@/components/making/RejectedFiles";
 import { UploadButton } from "@/components/making/UploadButton";
+import { ReadingView } from "@/components/ReadingView";
 import { Alert, AlertTitle } from "@/components/ui/alert";
-import { Empty, EmptyHeader, EmptyTitle } from "@/components/ui/empty";
 import { type Reading, useReading } from "@/lib/useReading";
 
+type ListedPhotos = Extract<PhotosAnswer, { status: "ok" }>;
+
 const listPhotos = (photos: Photos) => photos.list();
+const hasNoPhotos = (ok: ListedPhotos) => ok.photos.length === 0;
+const showPhotos = (ok: ListedPhotos) => <PhotoThumbnails photos={ok.photos} />;
 
 export function PhotoTray() {
 	const photos = usePhotos();
@@ -36,33 +43,6 @@ export function PhotoTray() {
 		setUploading(false);
 	};
 
-	let content = (
-		<Alert variant="destructive">
-			<AlertTitle>No se pudieron cargar las fotos</AlertTitle>
-		</Alert>
-	);
-	if (reading === "loading") {
-		content = (
-			<p
-				role="status"
-				aria-label="Cargando fotos"
-				className="text-muted-foreground"
-			>
-				Cargando…
-			</p>
-		);
-	} else if (reading.status === "ok" && reading.photos.length === 0) {
-		content = (
-			<Empty>
-				<EmptyHeader>
-					<EmptyTitle>Aún no hay fotos</EmptyTitle>
-				</EmptyHeader>
-			</Empty>
-		);
-	} else if (reading.status === "ok") {
-		content = <PhotoThumbnails photos={reading.photos} />;
-	}
-
 	let uploadError = null;
 	if (uploadFailed) {
 		uploadError = (
@@ -78,7 +58,16 @@ export function PhotoTray() {
 			className="flex h-full min-h-0 flex-col gap-3"
 		>
 			<h2 className="text-lg font-semibold">Mis fotos</h2>
-			<div className="min-h-0 flex-1 overflow-y-auto">{content}</div>
+			<div className="min-h-0 flex-1 overflow-y-auto">
+				<ReadingView
+					reading={reading}
+					loading={<LoadingNotice label="Cargando fotos" />}
+					failed={<FailureNotice message="No se pudieron cargar las fotos" />}
+					empty={<EmptyNotice message="Aún no hay fotos" />}
+					isEmpty={hasNoPhotos}
+					loaded={showPhotos}
+				/>
+			</div>
 			<RejectedFiles rejected={rejected} />
 			{uploadError}
 			<UploadButton uploading={uploading} onChosen={upload} />

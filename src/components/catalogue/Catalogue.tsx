@@ -1,55 +1,26 @@
-import { useState } from "react";
 import type { AlbumsAnswer } from "@/api/endpoints/Albums";
 import { AlbumRow } from "@/components/catalogue/AlbumRow";
-import { Alert, AlertTitle } from "@/components/ui/alert";
-import { Empty, EmptyHeader, EmptyTitle } from "@/components/ui/empty";
+import { EmptyNotice } from "@/components/EmptyNotice";
+import { FailureNotice } from "@/components/FailureNotice";
+import { LoadingNotice } from "@/components/LoadingNotice";
+import { ReadingView } from "@/components/ReadingView";
 
 export type CatalogueReading = "loading" | AlbumsAnswer;
 
-export function Catalogue({ reading }: { reading: CatalogueReading }) {
-	const [hasFailedCreating, setHasFailedCreating] = useState(false);
-	const failCreating = () => setHasFailedCreating(true);
+type Albums = Extract<AlbumsAnswer, { status: "ok" }>;
 
-	let content = <AlbumRow albums={[]} onFailure={failCreating} />;
-	if (reading === "loading") {
-		content = (
-			<p
-				role="status"
-				aria-label="Cargando álbumes"
-				className="text-muted-foreground"
-			>
-				Cargando…
-			</p>
-		);
-	} else if (reading.status === "error") {
-		content = (
-			<Alert variant="destructive">
-				<AlertTitle>No se pudo cargar el catálogo</AlertTitle>
-			</Alert>
-		);
-	} else if (reading.albums.length === 0) {
-		content = (
-			<Empty>
-				<EmptyHeader>
-					<EmptyTitle>El catálogo está vacío</EmptyTitle>
-				</EmptyHeader>
-			</Empty>
-		);
-	} else {
-		let creationAlert = null;
-		if (hasFailedCreating) {
-			creationAlert = (
-				<Alert variant="destructive">
-					<AlertTitle>No se pudo crear el álbum</AlertTitle>
-				</Alert>
-			);
-		}
-		content = (
-			<>
-				{creationAlert}
-				<AlbumRow albums={reading.albums} onFailure={failCreating} />
-			</>
-		);
-	}
-	return content;
+const hasNoAlbums = (ok: Albums) => ok.albums.length === 0;
+const showAlbums = (ok: Albums) => <AlbumRow albums={ok.albums} />;
+
+export function Catalogue({ reading }: { reading: CatalogueReading }) {
+	return (
+		<ReadingView
+			reading={reading}
+			loading={<LoadingNotice label="Cargando álbumes" />}
+			failed={<FailureNotice message="No se pudo cargar el catálogo" />}
+			empty={<EmptyNotice message="El catálogo está vacío" />}
+			isEmpty={hasNoAlbums}
+			loaded={showAlbums}
+		/>
+	);
 }

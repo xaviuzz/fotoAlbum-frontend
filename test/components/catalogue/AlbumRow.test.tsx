@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, test } from "bun:test";
 import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { AlbumRow } from "@/components/catalogue/AlbumRow";
 import { PresentedAlbum } from "@/domain/album/PresentedAlbum";
 import { UserAlbumHost } from "../../support/UserAlbumHost";
@@ -45,13 +46,30 @@ describe("AlbumRow", () => {
 
 		expect(sut.cards()).toHaveLength(0);
 	});
+
+	test("shows no alert while every card can still be pressed", () => {
+		sut.show([portraitAlbum]);
+
+		expect(sut.alerts()).toHaveLength(0);
+	});
+
+	test("shows an alert and keeps the cards when a user album cannot be created", async () => {
+		sut.show([portraitAlbum]);
+
+		await sut.pressCard();
+
+		expect(await sut.creationAlert()).toHaveTextContent(
+			"No se pudo crear el álbum",
+		);
+		expect(sut.cards()).toHaveLength(1);
+	});
 });
 
 class SUT {
 	show(albums: PresentedAlbum[]) {
 		render(
-			<UserAlbumHost>
-				<AlbumRow albums={albums} onFailure={() => {}} />
+			<UserAlbumHost fetch={refusal}>
+				<AlbumRow albums={albums} />
 			</UserAlbumHost>,
 		);
 	}
@@ -59,4 +77,27 @@ class SUT {
 	cards() {
 		return screen.queryAllByRole("button");
 	}
+
+	pressCard() {
+		return userEvent.click(this.cards()[0]);
+	}
+
+	alerts() {
+		return screen.queryAllByRole("alert");
+	}
+
+	creationAlert() {
+		return screen.findByRole("alert");
+	}
+}
+
+async function refusal(request: Request) {
+	const call = await request.json();
+	return new Response(
+		JSON.stringify({
+			header: { callId: call.header.callId, status: "error" },
+			body: { code: "INTERNAL_ERROR", message: "failed" },
+		}),
+		{ headers: { "content-type": "application/json" } },
+	);
 }
