@@ -1,3 +1,4 @@
+import { AlbumCharacteristics } from "@/components/making/AlbumCharacteristics";
 import { Button } from "@/components/ui/button";
 import {
 	HoverCard,
@@ -16,20 +17,7 @@ export function MakingHeader({ album }: { album: PresentedAlbum }) {
 					</Button>
 				</HoverCardTrigger>
 				<HoverCardContent className="w-auto" align="start">
-					<dl className="grid grid-cols-[max-content_1fr] gap-x-4 gap-y-1">
-						<dt>Referencia</dt>
-						<dd>{album.reference}</dd>
-						<dt>Tamaño del álbum</dt>
-						<dd>{album.albumSizeLabel()}</dd>
-						<dt>Tamaño de página</dt>
-						<dd>{album.pageSizeLabel()}</dd>
-						<dt>Páginas</dt>
-						<dd>{album.pageCount}</dd>
-						<dt>Encuadernación</dt>
-						<dd>{album.bindingLabel()}</dd>
-						<dt>Orientación</dt>
-						<dd>{album.orientationLabel()}</dd>
-					</dl>
+					<AlbumCharacteristics album={album} />
 				</HoverCardContent>
 			</HoverCard>
 		</h2>
