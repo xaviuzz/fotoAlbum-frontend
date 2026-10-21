@@ -36,6 +36,8 @@ After `shadcn add`, search `src/components/ui/` for `from "cn"`: the generator w
 
 `src/components/` groups one component per file by feature: `layout/`, `catalogue/`, `making/`; a component both features share sits at the root; `ui/` is shadcn. A helper used by one component sits beside it. Types shared across the app live in `src/domain/` (`album/`, `session/`); `src/lib/` keeps `useReading` and shadcn's `utils`. Decisions and why: umbrella `.claude/decisions.md`, "Components grouped by feature" and "Domain folder and colocated helpers".
 
+A component does one thing: when its markup holds a second one (a trigger and its dialog, a row and its card), give that part its own component beside it in the same folder. The parent keeps the state and composes the parts, each part gets its content through props, and a rule-carrying callback is a named function in the parent. Tests stay on the parent until a part earns its own behavior.
+
 A step that removes a method lists what else that method did (saving, navigating, notifying) and keeps a test for each effect that must survive.
 
 ## Skills
