@@ -31,6 +31,6 @@ export class Slots {
 	}
 
 	private presented(userAlbum: UserAlbumBody) {
-		return { userAlbum: new PresentedAlbum(userAlbum, userAlbum.slots) };
+		return { userAlbum: new PresentedAlbum(userAlbum) };
 	}
 }

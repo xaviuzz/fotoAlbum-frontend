@@ -32,7 +32,7 @@ describe("Slots place", () => {
 
 		expect(sut.result()).toEqual({
 			status: "ok",
-			userAlbum: new PresentedAlbum(userAlbum, userAlbum.slots),
+			userAlbum: new PresentedAlbum(userAlbum),
 		});
 	});
 
@@ -93,7 +93,7 @@ describe("Slots empty", () => {
 
 		expect(sut.result()).toEqual({
 			status: "ok",
-			userAlbum: new PresentedAlbum(userAlbum, userAlbum.slots),
+			userAlbum: new PresentedAlbum(userAlbum),
 		});
 	});
 

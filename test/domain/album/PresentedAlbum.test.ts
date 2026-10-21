@@ -62,20 +62,26 @@ describe("PresentedAlbum", () => {
 	});
 
 	test("tells which photo occupies a face, none when it is empty", () => {
-		const presented = new PresentedAlbum(portraitAlbum, [
-			{ face: 1, photoId: "photo-1" },
-			{ face: 2, photoId: null },
-		]);
+		const presented = new PresentedAlbum({
+			...portraitAlbum,
+			slots: [
+				{ face: 1, photoId: "photo-1" },
+				{ face: 2, photoId: null },
+			],
+		});
 
 		expect(presented.photoIdOf(1)).toBe("photo-1");
 		expect(presented.photoIdOf(2)).toBeNull();
 	});
 
 	test("tells whether a photo occupies any slot", () => {
-		const presented = new PresentedAlbum(portraitAlbum, [
-			{ face: 1, photoId: "photo-1" },
-			{ face: 2, photoId: null },
-		]);
+		const presented = new PresentedAlbum({
+			...portraitAlbum,
+			slots: [
+				{ face: 1, photoId: "photo-1" },
+				{ face: 2, photoId: null },
+			],
+		});
 
 		expect(presented.hasPlaced("photo-1")).toBe(true);
 		expect(presented.hasPlaced("photo-2")).toBe(false);

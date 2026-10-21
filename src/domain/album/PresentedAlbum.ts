@@ -20,9 +20,12 @@ export class PresentedAlbum {
 	private readonly album: Album;
 	private readonly slots: Slot[];
 
-	constructor(album: Album, slots: Slot[] = []) {
+	constructor(album: Album & { slots?: Slot[] }) {
 		this.album = album;
-		this.slots = slots;
+		this.slots = [];
+		if (album.slots) {
+			this.slots = album.slots;
+		}
 	}
 
 	get reference() {

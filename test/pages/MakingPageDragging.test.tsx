@@ -156,7 +156,9 @@ class SUT {
 			<FreshSession>
 				<ApiProvider baseUrl="http://localhost" fetch={fetch}>
 					<MemoryRouter initialEntries={["/confeccion"]}>
-						<AdoptingUserAlbum initial={new PresentedAlbum(userAlbum, slots)}>
+						<AdoptingUserAlbum
+							initial={new PresentedAlbum({ ...userAlbum, slots: slots })}
+						>
 							<MakingPage />
 						</AdoptingUserAlbum>
 					</MemoryRouter>

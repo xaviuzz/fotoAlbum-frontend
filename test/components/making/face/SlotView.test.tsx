@@ -27,7 +27,7 @@ describe("SlotView", () => {
 	});
 
 	test("sits inside the margins of the face", () => {
-		sut.show(new PresentedAlbum(album, []));
+		sut.show(new PresentedAlbum({ ...album, slots: [] }));
 
 		expect(sut.slot()).toHaveStyle({
 			left: "5%",
@@ -38,7 +38,9 @@ describe("SlotView", () => {
 	});
 
 	test("is outlined in blue while empty", () => {
-		sut.show(new PresentedAlbum(album, [{ face: 1, photoId: null }]));
+		sut.show(
+			new PresentedAlbum({ ...album, slots: [{ face: 1, photoId: null }] }),
+		);
 
 		expect(sut.slot()).toHaveClass("outline-blue-500");
 		expect(sut.photo()).not.toBeInTheDocument();
@@ -46,7 +48,9 @@ describe("SlotView", () => {
 
 	test("shows the thumbnail of its photo, fitted and without outline", async () => {
 		sut.answerList({ photos: [photo] });
-		sut.show(new PresentedAlbum(album, [{ face: 1, photoId: "p1" }]));
+		sut.show(
+			new PresentedAlbum({ ...album, slots: [{ face: 1, photoId: "p1" }] }),
+		);
 
 		const shown = await sut.photoOnceShown();
 
@@ -57,7 +61,9 @@ describe("SlotView", () => {
 
 	test("shows the photo of its own face", async () => {
 		sut.answerList({ photos: [photo] });
-		sut.show(new PresentedAlbum(album, [{ face: 2, photoId: "p1" }]));
+		sut.show(
+			new PresentedAlbum({ ...album, slots: [{ face: 2, photoId: "p1" }] }),
+		);
 
 		expect(await sut.slotOnceListed()).toHaveClass("outline-blue-500");
 		expect(sut.photo()).not.toBeInTheDocument();

@@ -54,7 +54,9 @@ describe("PhotoTray", () => {
 	test("lists only the photos that occupy no slot, in upload order", async () => {
 		sut.answerList({ photos: [firstPhoto, secondPhoto, thirdPhoto] });
 
-		sut.show(new PresentedAlbum(album, [{ face: 1, photoId: "p2" }]));
+		sut.show(
+			new PresentedAlbum({ ...album, slots: [{ face: 1, photoId: "p2" }] }),
+		);
 
 		const sources = await sut.thumbnailSourcesOnceThereAre(2);
 		expect(sources).toEqual([firstPhoto.thumbnailUrl, thirdPhoto.thumbnailUrl]);
@@ -132,7 +134,9 @@ class SUT {
 	private list: Pending = () => new Promise(() => {});
 	private uploadReply: Pending = () => new Promise(() => {});
 
-	show(userAlbum: PresentedAlbum = new PresentedAlbum(album, [])) {
+	show(
+		userAlbum: PresentedAlbum = new PresentedAlbum({ ...album, slots: [] }),
+	) {
 		const fetch = async (request: Request) => {
 			const isUpload = new URL(request.url).pathname === "/photo.upload";
 			let reply = this.list;

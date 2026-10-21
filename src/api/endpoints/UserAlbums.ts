@@ -32,8 +32,6 @@ export class UserAlbums {
 	}
 
 	private presented(body: { userAlbum: UserAlbumOkBody }) {
-		return {
-			userAlbum: new PresentedAlbum(body.userAlbum, body.userAlbum.slots),
-		};
+		return { userAlbum: new PresentedAlbum(body.userAlbum) };
 	}
 }

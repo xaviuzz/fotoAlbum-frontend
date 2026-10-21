@@ -32,7 +32,7 @@ describe("UserAlbums get", () => {
 
 		expect(sut.result()).toEqual({
 			status: "ok",
-			userAlbum: new PresentedAlbum(userAlbum, userAlbum.slots),
+			userAlbum: new PresentedAlbum(userAlbum),
 		});
 	});
 
@@ -81,7 +81,7 @@ describe("UserAlbums create", () => {
 
 		expect(sut.result()).toEqual({
 			status: "ok",
-			userAlbum: new PresentedAlbum(userAlbum, userAlbum.slots),
+			userAlbum: new PresentedAlbum(userAlbum),
 		});
 	});
 
