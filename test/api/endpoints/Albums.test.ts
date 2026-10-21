@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, test } from "bun:test";
 import createClient from "openapi-fetch";
-import { type Album, Albums } from "@/api/Albums";
-import { CallSender } from "@/api/CallSender";
+import { type Album, Albums } from "@/api/endpoints/Albums";
+import { CallSender } from "@/api/rpc/CallSender";
 import type { paths } from "@/api/schema";
 import { PresentedAlbum } from "@/lib/PresentedAlbum";
 import { Session } from "@/lib/Session";

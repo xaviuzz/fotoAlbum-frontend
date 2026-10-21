@@ -1,4 +1,4 @@
-import type { Album } from "@/api/Albums";
+import type { Album } from "@/api/endpoints/Albums";
 
 const bindingLabels: Record<Album["binding"], string> = {
 	hardcover: "Tapa dura",

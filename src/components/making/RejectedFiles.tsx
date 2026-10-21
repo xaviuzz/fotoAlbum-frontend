@@ -1,4 +1,4 @@
-import type { RejectedFile } from "@/api/Photos";
+import type { RejectedFile } from "@/api/endpoints/Photos";
 import { rejectionReasonOf } from "@/lib/rejectionReason";
 
 export function RejectedFiles({ rejected }: { rejected: RejectedFile[] }) {

@@ -1,7 +1,7 @@
 import { type ReactNode, useEffect, useState } from "react";
 import { Navigate, useLocation } from "react-router";
 import { useUserAlbums } from "@/api/ApiContext";
-import type { UserAlbumAnswer } from "@/api/UserAlbums";
+import type { UserAlbumAnswer } from "@/api/endpoints/UserAlbums";
 import { Alert, AlertTitle } from "@/components/ui/alert";
 import type { PresentedAlbum } from "@/lib/PresentedAlbum";
 import { UserAlbumContext } from "@/userAlbum/UserAlbumContext";

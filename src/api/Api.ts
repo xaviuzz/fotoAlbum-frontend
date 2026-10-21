@@ -1,10 +1,10 @@
 import type { Client } from "openapi-fetch";
-import { Albums } from "@/api/Albums";
-import { CallSender } from "@/api/CallSender";
-import { HealthCheck } from "@/api/HealthCheck";
-import { Photos } from "@/api/Photos";
+import { Albums } from "@/api/endpoints/Albums";
+import { HealthCheck } from "@/api/endpoints/HealthCheck";
+import { Photos } from "@/api/endpoints/Photos";
+import { UserAlbums } from "@/api/endpoints/UserAlbums";
+import { CallSender } from "@/api/rpc/CallSender";
 import type { paths } from "@/api/schema";
-import { UserAlbums } from "@/api/UserAlbums";
 import type { Session } from "@/lib/Session";
 
 export class Api {

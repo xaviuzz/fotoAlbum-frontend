@@ -1,4 +1,4 @@
-import type { Photo } from "@/api/Photos";
+import type { Photo } from "@/api/endpoints/Photos";
 
 export function PhotoThumbnails({ photos }: { photos: Photo[] }) {
 	const items = [];

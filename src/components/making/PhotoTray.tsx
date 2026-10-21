@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { usePhotos } from "@/api/ApiContext";
-import type { Photo, PhotosAnswer, RejectedFile } from "@/api/Photos";
+import type { Photo, PhotosAnswer, RejectedFile } from "@/api/endpoints/Photos";
 import { PhotoThumbnails } from "@/components/making/PhotoThumbnails";
 import { RejectedFiles } from "@/components/making/RejectedFiles";
 import { UploadButton } from "@/components/making/UploadButton";

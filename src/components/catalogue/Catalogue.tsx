@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { AlbumsAnswer } from "@/api/Albums";
+import type { AlbumsAnswer } from "@/api/endpoints/Albums";
 import { AlbumRow } from "@/components/catalogue/AlbumRow";
 import { Alert, AlertTitle } from "@/components/ui/alert";
 import { Empty, EmptyHeader, EmptyTitle } from "@/components/ui/empty";

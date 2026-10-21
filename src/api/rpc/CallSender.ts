@@ -1,6 +1,6 @@
 import type { Client } from "openapi-fetch";
-import type { ApiAnswer } from "@/api/ApiAnswer";
-import type { ApiErrorCode } from "@/api/ApiErrorCode";
+import type { ApiAnswer } from "@/api/rpc/ApiAnswer";
+import type { ApiErrorCode } from "@/api/rpc/ApiErrorCode";
 import type { components, paths } from "@/api/schema";
 import type { Session } from "@/lib/Session";
 
