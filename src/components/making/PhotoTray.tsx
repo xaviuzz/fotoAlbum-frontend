@@ -1,33 +1,26 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { usePhotos } from "@/api/ApiContext";
-import type { Photo, PhotosAnswer, RejectedFile } from "@/api/endpoints/Photos";
+import type {
+	Photo,
+	Photos,
+	PhotosAnswer,
+	RejectedFile,
+} from "@/api/endpoints/Photos";
 import { PhotoThumbnails } from "@/components/making/PhotoThumbnails";
 import { RejectedFiles } from "@/components/making/RejectedFiles";
 import { UploadButton } from "@/components/making/UploadButton";
 import { Alert, AlertTitle } from "@/components/ui/alert";
 import { Empty, EmptyHeader, EmptyTitle } from "@/components/ui/empty";
+import { type Reading, useReading } from "@/lib/useReading";
 
-type Reading = "loading" | PhotosAnswer;
+const listPhotos = (photos: Photos) => photos.list();
 
 export function PhotoTray() {
 	const photos = usePhotos();
-	const [reading, setReading] = useState<Reading>("loading");
+	const [reading, setReading] = useReading(photos, listPhotos);
 	const [uploading, setUploading] = useState(false);
 	const [uploadFailed, setUploadFailed] = useState(false);
 	const [rejected, setRejected] = useState<RejectedFile[]>([]);
-
-	useEffect(() => {
-		let isCurrent = true;
-		setReading("loading");
-		photos.list().then((answer) => {
-			if (isCurrent) {
-				setReading(answer);
-			}
-		});
-		return () => {
-			isCurrent = false;
-		};
-	}, [photos]);
 
 	const upload = async (files: File[]) => {
 		setUploading(true);
@@ -93,7 +86,10 @@ export function PhotoTray() {
 	);
 }
 
-function append(current: Reading, added: Photo[]): Reading {
+function append(
+	current: Reading<PhotosAnswer>,
+	added: Photo[],
+): Reading<PhotosAnswer> {
 	let next = current;
 	if (current !== "loading" && current.status === "ok") {
 		next = { status: "ok", photos: [...current.photos, ...added] };

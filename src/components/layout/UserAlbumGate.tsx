@@ -1,30 +1,18 @@
-import { type ReactNode, useEffect, useState } from "react";
+import type { ReactNode } from "react";
 import { Navigate, useLocation } from "react-router";
 import { useUserAlbums } from "@/api/ApiContext";
-import type { UserAlbumAnswer } from "@/api/endpoints/UserAlbums";
+import type { UserAlbums } from "@/api/endpoints/UserAlbums";
 import { Alert, AlertTitle } from "@/components/ui/alert";
 import { UserAlbumContext } from "@/contexts/UserAlbumContext";
 import type { PresentedAlbum } from "@/lib/PresentedAlbum";
+import { useReading } from "@/lib/useReading";
 
-type UserAlbumReading = "loading" | UserAlbumAnswer;
+const getUserAlbum = (userAlbums: UserAlbums) => userAlbums.get();
 
 export function UserAlbumGate({ children }: { children: ReactNode }) {
 	const userAlbums = useUserAlbums();
 	const { pathname } = useLocation();
-	const [reading, setReading] = useState<UserAlbumReading>("loading");
-
-	useEffect(() => {
-		let isCurrent = true;
-		setReading("loading");
-		userAlbums.get().then((answer) => {
-			if (isCurrent) {
-				setReading(answer);
-			}
-		});
-		return () => {
-			isCurrent = false;
-		};
-	}, [userAlbums]);
+	const [reading, setReading] = useReading(userAlbums, getUserAlbum);
 
 	const adopt = (userAlbum: PresentedAlbum) =>
 		setReading({ status: "ok", userAlbum });

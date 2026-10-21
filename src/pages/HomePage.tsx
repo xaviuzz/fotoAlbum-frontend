@@ -1,25 +1,13 @@
-import { useEffect, useState } from "react";
 import { useAlbums } from "@/api/ApiContext";
-import {
-	Catalogue,
-	type CatalogueReading,
-} from "@/components/catalogue/Catalogue";
+import type { Albums } from "@/api/endpoints/Albums";
+import { Catalogue } from "@/components/catalogue/Catalogue";
+import { useReading } from "@/lib/useReading";
+
+const listAlbums = (albums: Albums) => albums.list();
 
 export function HomePage() {
 	const albums = useAlbums();
-	const [reading, setReading] = useState<CatalogueReading>("loading");
-
-	useEffect(() => {
-		let isCurrent = true;
-		albums.list().then((answer) => {
-			if (isCurrent) {
-				setReading(answer);
-			}
-		});
-		return () => {
-			isCurrent = false;
-		};
-	}, [albums]);
+	const [reading] = useReading(albums, listAlbums);
 
 	return (
 		<main
