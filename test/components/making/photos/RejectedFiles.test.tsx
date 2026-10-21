@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { render, screen } from "@testing-library/react";
-import { RejectedFiles } from "@/components/making/RejectedFiles";
+import { RejectedFiles } from "@/components/making/photos/RejectedFiles";
 
 describe("RejectedFiles", () => {
 	test("lists each file with the reason it was rejected", () => {

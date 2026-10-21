@@ -2,8 +2,8 @@ import { beforeEach, describe, expect, test } from "bun:test";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { ApiProvider } from "@/api/ApiContext";
-import { PhotoTray } from "@/components/making/PhotoTray";
-import { FreshSession } from "../../support/FreshSession";
+import { PhotoTray } from "@/components/making/photos/PhotoTray";
+import { FreshSession } from "../../../support/FreshSession";
 
 const firstPhoto = { id: "p1", thumbnailUrl: "/photos/s/p1/thumbnail" };
 const secondPhoto = { id: "p2", thumbnailUrl: "/photos/s/p2/thumbnail" };

@@ -1,6 +1,6 @@
-import { FaceViewer } from "@/components/making/FaceViewer";
+import { FaceViewer } from "@/components/making/face/FaceViewer";
 import { MakingHeader } from "@/components/making/MakingHeader";
-import { PhotoTray } from "@/components/making/PhotoTray";
+import { PhotoTray } from "@/components/making/photos/PhotoTray";
 import { useCurrentUserAlbum } from "@/contexts/UserAlbumContext";
 
 export function MakingPage() {

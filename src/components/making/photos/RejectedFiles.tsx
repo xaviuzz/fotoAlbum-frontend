@@ -1,5 +1,5 @@
 import type { RejectedFile } from "@/api/endpoints/Photos";
-import { rejectionReasonOf } from "@/components/making/rejectionReason";
+import { rejectionReasonOf } from "@/components/making/photos/rejectionReason";
 
 export function RejectedFiles({ rejected }: { rejected: RejectedFile[] }) {
 	let content = null;

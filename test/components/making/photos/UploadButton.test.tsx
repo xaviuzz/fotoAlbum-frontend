@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, test } from "bun:test";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { UploadButton } from "@/components/making/UploadButton";
+import { UploadButton } from "@/components/making/photos/UploadButton";
 
 describe("UploadButton", () => {
 	let sut: SUT;

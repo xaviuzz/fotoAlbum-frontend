@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { rejectionReasonOf } from "@/components/making/rejectionReason";
+import { rejectionReasonOf } from "@/components/making/photos/rejectionReason";
 
 describe("rejectionReasonOf", () => {
 	test("explains an unsupported format", () => {

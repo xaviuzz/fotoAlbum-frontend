@@ -9,9 +9,9 @@ import type {
 import { EmptyNotice } from "@/components/EmptyNotice";
 import { FailureNotice } from "@/components/FailureNotice";
 import { LoadingNotice } from "@/components/LoadingNotice";
-import { PhotoThumbnails } from "@/components/making/PhotoThumbnails";
-import { RejectedFiles } from "@/components/making/RejectedFiles";
-import { UploadButton } from "@/components/making/UploadButton";
+import { PhotoThumbnails } from "@/components/making/photos/PhotoThumbnails";
+import { RejectedFiles } from "@/components/making/photos/RejectedFiles";
+import { UploadButton } from "@/components/making/photos/UploadButton";
 import { ReadingView } from "@/components/ReadingView";
 import { Alert, AlertTitle } from "@/components/ui/alert";
 import { type Reading, useReading } from "@/lib/useReading";

@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { render, screen } from "@testing-library/react";
-import { PhotoThumbnails } from "@/components/making/PhotoThumbnails";
+import { PhotoThumbnails } from "@/components/making/photos/PhotoThumbnails";
 
 describe("PhotoThumbnails", () => {
 	test("shows each thumbnail in order", () => {
