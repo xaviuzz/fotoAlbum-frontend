@@ -1,7 +1,7 @@
 import type { ApiAnswer } from "@/api/rpc/ApiAnswer";
 import type { CallSender } from "@/api/rpc/CallSender";
 import type { components } from "@/api/schema";
-import { PresentedAlbum } from "@/lib/PresentedAlbum";
+import { PresentedAlbum } from "@/domain/album/PresentedAlbum";
 
 export type Album = components["schemas"]["Album"];
 

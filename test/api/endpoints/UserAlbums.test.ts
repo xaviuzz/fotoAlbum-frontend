@@ -3,8 +3,8 @@ import createClient from "openapi-fetch";
 import { UserAlbums } from "@/api/endpoints/UserAlbums";
 import { CallSender } from "@/api/rpc/CallSender";
 import type { paths } from "@/api/schema";
-import { PresentedAlbum } from "@/lib/PresentedAlbum";
-import { Session } from "@/lib/Session";
+import { PresentedAlbum } from "@/domain/album/PresentedAlbum";
+import { Session } from "@/domain/session/Session";
 
 const userAlbum = {
 	id: "0190-user-album",

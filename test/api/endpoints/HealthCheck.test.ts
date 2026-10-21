@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, test } from "bun:test";
 import createClient from "openapi-fetch";
 import { type Health, HealthCheck } from "@/api/endpoints/HealthCheck";
 import type { paths } from "@/api/schema";
-import { Session } from "@/lib/Session";
+import { Session } from "@/domain/session/Session";
 
 describe("HealthCheck", () => {
 	let sut: SUT;

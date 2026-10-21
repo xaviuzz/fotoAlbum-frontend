@@ -3,7 +3,7 @@ import createClient from "openapi-fetch";
 import { Photos } from "@/api/endpoints/Photos";
 import { CallSender } from "@/api/rpc/CallSender";
 import type { paths } from "@/api/schema";
-import { Session } from "@/lib/Session";
+import { Session } from "@/domain/session/Session";
 
 const firstPhoto = { id: "p1", thumbnailUrl: "/photos/session-1/p1/thumbnail" };
 const secondPhoto = {

@@ -4,7 +4,7 @@ import {
 	HoverCardContent,
 	HoverCardTrigger,
 } from "@/components/ui/hover-card";
-import type { PresentedAlbum } from "@/lib/PresentedAlbum";
+import type { PresentedAlbum } from "@/domain/album/PresentedAlbum";
 
 export function MakingHeader({ album }: { album: PresentedAlbum }) {
 	return (

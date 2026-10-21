@@ -4,7 +4,7 @@ import { useUserAlbums } from "@/api/ApiContext";
 import type { UserAlbums } from "@/api/endpoints/UserAlbums";
 import { Alert, AlertTitle } from "@/components/ui/alert";
 import { UserAlbumContext } from "@/contexts/UserAlbumContext";
-import type { PresentedAlbum } from "@/lib/PresentedAlbum";
+import type { PresentedAlbum } from "@/domain/album/PresentedAlbum";
 import { useReading } from "@/lib/useReading";
 
 const getUserAlbum = (userAlbums: UserAlbums) => userAlbums.get();

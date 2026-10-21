@@ -3,7 +3,7 @@ import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 import { ApiProvider } from "@/api/ApiContext";
 import { UserAlbumContext } from "@/contexts/UserAlbumContext";
-import { PresentedAlbum } from "@/lib/PresentedAlbum";
+import { PresentedAlbum } from "@/domain/album/PresentedAlbum";
 import { MakingPage } from "@/pages/MakingPage";
 import { FreshSession } from "../support/FreshSession";
 

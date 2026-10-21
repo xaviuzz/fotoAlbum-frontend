@@ -1,4 +1,4 @@
-import { Session } from "@/lib/Session";
+import { Session } from "@/domain/session/Session";
 
 const KEY = "fotoAlbum.session";
 

@@ -1,5 +1,5 @@
 import { createContext, useContext } from "react";
-import type { PresentedAlbum } from "@/lib/PresentedAlbum";
+import type { PresentedAlbum } from "@/domain/album/PresentedAlbum";
 
 export type CurrentUserAlbum = {
 	userAlbum: PresentedAlbum | null;

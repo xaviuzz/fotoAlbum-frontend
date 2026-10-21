@@ -5,7 +5,7 @@ import {
 	Catalogue,
 	type CatalogueReading,
 } from "@/components/catalogue/Catalogue";
-import { PresentedAlbum } from "@/lib/PresentedAlbum";
+import { PresentedAlbum } from "@/domain/album/PresentedAlbum";
 import { UserAlbumHost } from "../../support/UserAlbumHost";
 
 const album = new PresentedAlbum({

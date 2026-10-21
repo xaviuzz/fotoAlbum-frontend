@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import type { Album } from "@/api/endpoints/Albums";
-import { PresentedAlbum } from "@/lib/PresentedAlbum";
+import { PresentedAlbum } from "@/domain/album/PresentedAlbum";
 
 const portraitAlbum: Album = {
 	reference: "PT-150",

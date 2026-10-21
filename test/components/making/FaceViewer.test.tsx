@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, test } from "bun:test";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { FaceViewer } from "@/components/making/FaceViewer";
-import { PresentedAlbum } from "@/lib/PresentedAlbum";
+import { PresentedAlbum } from "@/domain/album/PresentedAlbum";
 
 const portraitAlbum = new PresentedAlbum({
 	reference: "PT-150",

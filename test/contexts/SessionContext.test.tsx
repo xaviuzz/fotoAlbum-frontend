@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, test } from "bun:test";
 import { act, render, screen } from "@testing-library/react";
 import { SessionProvider, useSession } from "@/contexts/SessionContext";
-import { Session } from "@/lib/Session";
-import { SessionStore } from "@/lib/SessionStore";
+import { Session } from "@/domain/session/Session";
+import { SessionStore } from "@/domain/session/SessionStore";
 import { FakeStorage } from "../support/FakeStorage";
 
 function SessionPanel() {

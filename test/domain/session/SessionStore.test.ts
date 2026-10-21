@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, test } from "bun:test";
-import { Session } from "@/lib/Session";
-import { SessionStore } from "@/lib/SessionStore";
+import { Session } from "@/domain/session/Session";
+import { SessionStore } from "@/domain/session/SessionStore";
 
 const UUID = /^[0-9a-f-]{36}$/;
 

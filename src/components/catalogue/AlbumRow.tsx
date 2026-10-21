@@ -1,5 +1,5 @@
 import { AlbumCard } from "@/components/catalogue/AlbumCard";
-import type { PresentedAlbum } from "@/lib/PresentedAlbum";
+import type { PresentedAlbum } from "@/domain/album/PresentedAlbum";
 
 const MAX_ALBUMS_THAT_FIT = 3;
 

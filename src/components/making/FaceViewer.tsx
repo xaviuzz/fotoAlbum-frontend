@@ -1,8 +1,8 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useState } from "react";
+import { FaceNumber } from "@/components/making/FaceNumber";
 import { Button } from "@/components/ui/button";
-import { FaceNumber } from "@/lib/FaceNumber";
-import type { PresentedAlbum } from "@/lib/PresentedAlbum";
+import type { PresentedAlbum } from "@/domain/album/PresentedAlbum";
 
 const bindingStrips = {
 	left: "left-0 bg-gradient-to-r",

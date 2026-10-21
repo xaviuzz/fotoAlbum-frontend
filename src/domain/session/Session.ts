@@ -1,4 +1,4 @@
-import { avatarColorOf } from "@/lib/avatarColor";
+import { avatarColorOf } from "@/domain/session/avatarColor";
 
 export class Session {
 	private readonly identity: string;

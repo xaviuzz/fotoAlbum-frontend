@@ -3,7 +3,7 @@ import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { SessionMenu } from "@/components/layout/SessionMenu";
 import { SessionProvider } from "@/contexts/SessionContext";
-import { SessionStore } from "@/lib/SessionStore";
+import { SessionStore } from "@/domain/session/SessionStore";
 import { FakeStorage } from "../../support/FakeStorage";
 
 describe("SessionMenu", () => {

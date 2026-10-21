@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, test } from "bun:test";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MakingHeader } from "@/components/making/MakingHeader";
-import { PresentedAlbum } from "@/lib/PresentedAlbum";
+import { PresentedAlbum } from "@/domain/album/PresentedAlbum";
 
 const album = new PresentedAlbum({
 	reference: "PT-150",

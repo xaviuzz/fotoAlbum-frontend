@@ -1,6 +1,6 @@
 import { createContext, type ReactNode, useContext, useState } from "react";
-import type { Session } from "@/lib/Session";
-import type { SessionStore } from "@/lib/SessionStore";
+import type { Session } from "@/domain/session/Session";
+import type { SessionStore } from "@/domain/session/SessionStore";
 
 type SessionHandle = {
 	session: Session;

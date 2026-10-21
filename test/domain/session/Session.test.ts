@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { Session } from "@/lib/Session";
+import { Session } from "@/domain/session/Session";
 
 describe("Session", () => {
 	test("starts every time with a different identity", () => {

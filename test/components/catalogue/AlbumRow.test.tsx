@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, test } from "bun:test";
 import { render, screen } from "@testing-library/react";
 import { AlbumRow } from "@/components/catalogue/AlbumRow";
-import { PresentedAlbum } from "@/lib/PresentedAlbum";
+import { PresentedAlbum } from "@/domain/album/PresentedAlbum";
 import { UserAlbumHost } from "../../support/UserAlbumHost";
 
 const squareAlbum = new PresentedAlbum({

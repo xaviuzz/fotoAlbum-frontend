@@ -3,7 +3,7 @@ import { BrowserRouter } from "react-router";
 import { App } from "@/App";
 import { ApiProvider } from "@/api/ApiContext";
 import { SessionProvider } from "@/contexts/SessionContext";
-import { SessionStore } from "@/lib/SessionStore";
+import { SessionStore } from "@/domain/session/SessionStore";
 import "./index.css";
 
 const rootElement = document.getElementById("root");

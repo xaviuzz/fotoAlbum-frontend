@@ -1,6 +1,6 @@
 import type { Client } from "openapi-fetch";
 import type { paths } from "@/api/schema";
-import type { Session } from "@/lib/Session";
+import type { Session } from "@/domain/session/Session";
 
 export type Health = "ok" | "error";
 

@@ -5,9 +5,9 @@ import { ApiProvider } from "@/api/ApiContext";
 import { UserAlbumGate } from "@/components/layout/UserAlbumGate";
 import { SessionProvider, useSession } from "@/contexts/SessionContext";
 import { useCurrentUserAlbum } from "@/contexts/UserAlbumContext";
-import { PresentedAlbum } from "@/lib/PresentedAlbum";
-import { Session } from "@/lib/Session";
-import { SessionStore } from "@/lib/SessionStore";
+import { PresentedAlbum } from "@/domain/album/PresentedAlbum";
+import { Session } from "@/domain/session/Session";
+import { SessionStore } from "@/domain/session/SessionStore";
 import { FakeStorage } from "../../support/FakeStorage";
 
 const userAlbum = {

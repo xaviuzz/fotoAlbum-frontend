@@ -3,7 +3,7 @@ import { useNavigate } from "react-router";
 import { useUserAlbums } from "@/api/ApiContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useCurrentUserAlbum } from "@/contexts/UserAlbumContext";
-import type { PresentedAlbum } from "@/lib/PresentedAlbum";
+import type { PresentedAlbum } from "@/domain/album/PresentedAlbum";
 
 export function AlbumCard({
 	album,

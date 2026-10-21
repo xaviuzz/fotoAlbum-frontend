@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { FaceNumber } from "@/lib/FaceNumber";
+import { FaceNumber } from "@/components/making/FaceNumber";
 
 describe("FaceNumber", () => {
 	test("starts at the first face and reads n over the page count", () => {
