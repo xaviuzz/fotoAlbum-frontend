@@ -1,10 +1,8 @@
 import type { ReactNode } from "react";
-import { Navigate, useLocation } from "react-router";
+import { useLocation } from "react-router";
 import { useUserAlbums } from "@/api/ApiContext";
 import type { UserAlbums } from "@/api/endpoints/UserAlbums";
-import { FailureNotice } from "@/components/FailureNotice";
-import { LoadingNotice } from "@/components/LoadingNotice";
-import { UserAlbumContext } from "@/contexts/UserAlbumContext";
+import { standingOf } from "@/components/layout/GateStanding";
 import type { PresentedAlbum } from "@/domain/album/PresentedAlbum";
 import { useReading } from "@/lib/useReading";
 
@@ -18,29 +16,6 @@ export function UserAlbumGate({ children }: { children: ReactNode }) {
 	const adopt = (userAlbum: PresentedAlbum) =>
 		setReading({ status: "ok", userAlbum });
 
-	let content = <FailureNotice message="No se pudo cargar el álbum" />;
-	let userAlbum: PresentedAlbum | null = null;
-	let belongsAt = "/";
-	let isAnswered = false;
-	if (reading === "loading") {
-		content = <LoadingNotice label="Cargando álbum" />;
-	} else if (reading.status === "ok") {
-		userAlbum = reading.userAlbum;
-		belongsAt = "/confeccion";
-		isAnswered = true;
-	} else if (reading.code === "USER_ALBUM_NOT_FOUND") {
-		isAnswered = true;
-	}
-	if (isAnswered) {
-		let shown = children;
-		if (pathname !== belongsAt) {
-			shown = <Navigate to={belongsAt} replace />;
-		}
-		content = (
-			<UserAlbumContext.Provider value={{ userAlbum, adopt }}>
-				{shown}
-			</UserAlbumContext.Provider>
-		);
-	}
-	return content;
+	const standing = standingOf(reading);
+	return <>{standing.show({ children, pathname, adopt })}</>;
 }
