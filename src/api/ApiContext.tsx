@@ -47,3 +47,7 @@ export function usePhotos() {
 export function useUserAlbums() {
 	return useApi("useUserAlbums").userAlbums;
 }
+
+export function useSlots() {
+	return useApi("useSlots").slots;
+}

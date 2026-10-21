@@ -2,6 +2,7 @@ import type { Client } from "openapi-fetch";
 import { Albums } from "@/api/endpoints/Albums";
 import { HealthCheck } from "@/api/endpoints/HealthCheck";
 import { Photos } from "@/api/endpoints/Photos";
+import { Slots } from "@/api/endpoints/Slots";
 import { UserAlbums } from "@/api/endpoints/UserAlbums";
 import { CallSender } from "@/api/rpc/CallSender";
 import type { paths } from "@/api/schema";
@@ -12,6 +13,7 @@ export class Api {
 	readonly albums: Albums;
 	readonly photos: Photos;
 	readonly userAlbums: UserAlbums;
+	readonly slots: Slots;
 
 	constructor(client: Client<paths>, session: Session) {
 		const sender = new CallSender(client, session);
@@ -19,5 +21,6 @@ export class Api {
 		this.albums = new Albums(sender);
 		this.photos = new Photos(sender);
 		this.userAlbums = new UserAlbums(sender);
+		this.slots = new Slots(sender);
 	}
 }

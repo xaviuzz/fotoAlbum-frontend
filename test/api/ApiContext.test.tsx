@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { render } from "@testing-library/react";
-import { useAlbums, useUserAlbums } from "@/api/ApiContext";
+import { useAlbums, useSlots, useUserAlbums } from "@/api/ApiContext";
 
 function AlbumsUser() {
 	useAlbums();
@@ -9,6 +9,11 @@ function AlbumsUser() {
 
 function UserAlbumsUser() {
 	useUserAlbums();
+	return null;
+}
+
+function SlotsUser() {
+	useSlots();
 	return null;
 }
 
@@ -21,5 +26,11 @@ describe("useAlbums", () => {
 describe("useUserAlbums", () => {
 	test("needs an api provider", () => {
 		expect(() => render(<UserAlbumsUser />)).toThrow("ApiProvider");
+	});
+});
+
+describe("useSlots", () => {
+	test("needs an api provider", () => {
+		expect(() => render(<SlotsUser />)).toThrow("ApiProvider");
 	});
 });
